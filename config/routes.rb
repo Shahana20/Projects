@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
-  devise_for :users
-
-  get "up" => "rails/health#show", as: :rails_health_check
+  devise_for :users, controllers: {
+  passwords: 'users/passwords'
+}
 
   namespace :api do
     namespace :v1 do
