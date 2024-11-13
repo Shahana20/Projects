@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBInput, MDBBtn } from 'mdb-react-ui-kit';
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -33,63 +32,60 @@ const LoginForm = () => {
   };
 
   return (
-    <MDBContainer fluid className="h-100" style={{ backgroundColor: '#1d608d' }}>
-      <MDBRow className="d-flex justify-content-center align-items-center h-100 bg-primary">
-        <MDBCol col="12" lg="6">
+    <div className="h-screen bg-blue-700 flex justify-center items-center">
+      <div className="w-full max-w-sm bg-white p-6 rounded-xl shadow-lg">
+        <h3 className="text-2xl font-bold text-center text-gray-800 mb-4">Login</h3>
+        <p className="text-gray-500 text-center mb-6">Please enter your login credentials!</p>
 
-          <MDBCard className="bg-white text-black my-5 mx-auto" style={{ borderRadius: '1rem', maxWidth: '400px' }}>
-            <MDBCardBody className="p-4 d-flex flex-column align-items-center mx-auto w-100">
+        <form onSubmit={handleLogin} className="w-full">
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-gray-700">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="w-full p-3 border border-gray-300 rounded-lg"
+              placeholder="Email"
+            />
+          </div>
 
-              <h3 className="fw-bold text-uppercase">Login</h3>
-              <p className="text-black-50 mb-4">Please enter your login credentials!</p>
+          <div className="mb-6">
+            <label htmlFor="password" className="block text-gray-700">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className="w-full p-3 border border-gray-300 rounded-lg"
+              placeholder="Password"
+            />
+          </div>
 
-              <form onSubmit={handleLogin} className="w-100">
-                <MDBInput
-                  wrapperClass="mb-4 w-100"
-                  labelClass="text-black"
-                  placeholder="Email"
-                  id="formControlLg"
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  size="lg"
-                />
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-3 rounded-lg mb-3 hover:bg-blue-700 transition duration-300"
+          >
+            Login
+          </button>
+        </form>
 
-                <MDBInput
-                  wrapperClass="mb-4 w-100"
-                  labelClass="text-black"
-                  placeholder="Password"
-                  id="formControlLg"
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  size="lg"
-                />
+        <div className="flex justify-end mb-4">
+          <a href="/forgot-password" className="text-blue-500 hover:underline">Forgot Password?</a>
+        </div>
 
-                <MDBBtn type="submit" className="btn-primary w-100 mb-3" size="lg">
-                  Login
-                </MDBBtn>
-              </form>
-
-              <div className="text-end w-100 mb-3">
-                <a href="/forgot-password" className="text-black-50">Forgot Password?</a>
-              </div>
-
-              <div>
-                <p className="mb-0 p-3">
-                  Don't have an account? <a href="/signup" className="text-black-50 fw-bold">Sign Up</a>
-                </p>
-              </div>
-            </MDBCardBody>
-          </MDBCard>
-
-        </MDBCol>
-      </MDBRow>
-    </MDBContainer>
+        <div className="text-center">
+          <p className="text-gray-600">
+            Don't have an account?{' '}
+            <a href="/signup" className="text-blue-500 font-bold hover:underline">Sign Up</a>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 };
 

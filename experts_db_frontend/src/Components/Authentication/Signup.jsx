@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // For navigation
-import { MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBInput, MDBBtn, MDBAlert } from 'mdb-react-ui-kit'; // MDB UI Kit
 
 const Signup = () => {
   const [userData, setUserData] = useState({
@@ -77,107 +76,107 @@ const Signup = () => {
   };
 
   return (
-    <MDBContainer fluid className="h-100">
-      <MDBRow className='d-flex justify-content-center align-items-center h-100 bg-primary'>
-        <MDBCol col='12'>
+    <div className="flex justify-center items-center min-h-screen bg-blue-500">
+      <div className="bg-white rounded-3xl shadow-xl p-4 w-full max-w-sm">
+        <div className="flex justify-center mb-6">
+          <img
+            className="rounded-full w-16 h-16"
+            src="https://via.placeholder.com/50"
+            alt="Profile"
+          />
+        </div>
+        <h3 className="text-2xl font-semibold text-center text-gray-800">Experts</h3>
+        <h4 className="text-xl font-semibold text-center text-gray-800 mb-4">Sign Up</h4>
+        <p className="text-gray-500 text-center mb-6">Please enter your details to create an account!</p>
 
-          <MDBCard className='bg-white text-black my-5 mx-auto' style={{ borderRadius: '3rem', borderColor: "black", maxWidth: '400px' }}>
-            <MDBCardBody className='p-4 d-flex flex-column align-items-center mx-auto w-100'>
+        {errorMessage && (
+          <div className="bg-red-500 text-white p-3 mb-4 text-center rounded-md">
+            {errorMessage}
+          </div>
+        )}
 
-              <img
-                className="rounded-circle"
-                src="https://via.placeholder.com/50"
-                alt="Profile"
-              />
-              <h3 className="ms-2 fw-bold text-uppercase">Experts</h3>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label htmlFor="first_name" className="block text-gray-800">First Name</label>
+            <input
+              id="first_name"
+              name="first_name"
+              type="text"
+              value={userData.first_name}
+              onChange={handleChange}
+              placeholder="Enter your first name"
+              className="w-full p-3 border rounded-md text-gray-700 mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
-              <h4 className="fw-bold mb-4 text-uppercase">Sign Up</h4>
-              <p className="text-black-50 mb-4">Please enter your details to create an account!</p>
+          <div className="mb-4">
+            <label htmlFor="last_name" className="block text-gray-800">Last Name</label>
+            <input
+              id="last_name"
+              name="last_name"
+              type="text"
+              value={userData.last_name}
+              onChange={handleChange}
+              placeholder="Enter your last name"
+              className="w-full p-3 border rounded-md text-gray-700 mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
-              {/* Error Message
-              {errorMessage && <MDBAlert color="danger">{errorMessage}</MDBAlert>} */}
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-gray-800">Email address</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              value={userData.email}
+              onChange={handleChange}
+              placeholder="Enter your email address"
+              className="w-full p-3 border rounded-md text-gray-700 mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
-              <form onSubmit={handleSubmit}>
-                <MDBInput
-                  wrapperClass='mb-4 w-100'
-                  labelClass='text-black'
-                  label='First Name'
-                  placeholder='Enter your first name'
-                  id='first_name'
-                  type="text"
-                  name="first_name"
-                  value={userData.first_name}
-                  onChange={handleChange}
-                  size="lg"
-                />
+          <div className="mb-4">
+            <label htmlFor="password" className="block text-gray-800">Password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              value={userData.password}
+              onChange={handlePasswordChange}
+              placeholder="Enter your password"
+              className="w-full p-3 border rounded-md text-gray-700 mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {/* Password Strength (optional) */}
+            {/* <p className="mt-2 text-gray-600">Password Strength: {passwordStrength}</p> */}
+          </div>
 
-                <MDBInput
-                  wrapperClass='mb-4 w-100'
-                  labelClass='text-black'
-                  label='Last Name'
-                  placeholder='Enter your last name'
-                  id='last_name'
-                  type="text"
-                  name="last_name"
-                  value={userData.last_name}
-                  onChange={handleChange}
-                  size="lg"
-                />
+          <div className="mb-4">
+            <label htmlFor="password_confirmation" className="block text-gray-800">Confirm Password</label>
+            <input
+              id="password_confirmation"
+              name="password_confirmation"
+              type="password"
+              value={userData.password_confirmation}
+              onChange={handleChange}
+              placeholder="Enter your password (again)"
+              className="w-full p-3 border rounded-md text-gray-700 mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
-                <MDBInput
-                  wrapperClass='mb-4 w-100'
-                  labelClass='text-black'
-                  label='Email address'
-                  placeholder='Enter your email address'
-                  id='email'
-                  type="email"
-                  name="email"
-                  value={userData.email}
-                  onChange={handleChange}
-                  size="lg"
-                />
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full p-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+          >
+            {isSubmitting ? 'Signing Up...' : 'Sign Up'}
+          </button>
+        </form>
 
-                <MDBInput
-                  wrapperClass='mb-4 w-100'
-                  labelClass='text-black'
-                  label='Password'
-                  placeholder='Enter your Password'
-                  id='password'
-                  type="password"
-                  name="password"
-                  value={userData.password}
-                  onChange={handlePasswordChange}
-                  size="lg"
-                />
-                {/* <span>Password Strength: {passwordStrength}</span> */}
-
-                <MDBInput
-                  wrapperClass='mb-4 w-100'
-                  labelClass='text-black'
-                  label='Confirm Password'
-                  placeholder='Enter your password(again)'
-                  id='password_confirmation'
-                  type="password"
-                  name="password_confirmation"
-                  value={userData.password_confirmation}
-                  onChange={handleChange}
-                  size="lg"
-                />
-
-                <MDBBtn type="submit" color="primary" block disabled={isSubmitting}>
-                  {isSubmitting ? 'Signing Up...' : 'Sign Up'}
-                </MDBBtn>
-              </form>
-
-              <div>
-                <p className="mb-0 p-3">Already have an account? <a href="/login" className="text-black-50 fw-bold">Login</a></p>
-              </div>
-            </MDBCardBody>
-          </MDBCard>
-
-        </MDBCol>
-      </MDBRow>
-    </MDBContainer>
+        <div className="mt-4 text-center">
+          <p className="text-gray-500">Already have an account? <a href="/login" className="text-blue-600 font-semibold">Login</a></p>
+        </div>
+      </div>
+    </div>
   );
 };
 
