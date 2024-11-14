@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // For navigation
+import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
   const [userData, setUserData] = useState({
@@ -13,9 +13,9 @@ const Signup = () => {
 
   const [passwordStrength, setPasswordStrength] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false); // For disabling the button during submission
+  const [isSubmitting, setIsSubmitting] = useState(false); 
 
-  const navigate = useNavigate(); // To navigate after successful signup
+  const navigate = useNavigate(); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,7 +24,7 @@ const Signup = () => {
       [name]: value,
     });
 
-    // Reset error message when user starts typing
+    
     if (errorMessage) {
       setErrorMessage('');
     }
@@ -46,32 +46,33 @@ const Signup = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent form from refreshing the page on submit
+    e.preventDefault(); 
 
-    // Basic validation for empty fields
+    
     if (!userData.first_name || !userData.last_name || !userData.email || !userData.password || !userData.password_confirmation) {
       setErrorMessage('All fields are required.');
       return;
     }
 
-    // Password confirmation check
     if (userData.password !== userData.password_confirmation) {
       setErrorMessage("Passwords do not match!");
       return;
     }
 
-    setIsSubmitting(true); // Disable the button during submission
+    setIsSubmitting(true); 
 
     try {
       const response = await axios.post('http://localhost:3000/api/v1/signup', { auth: userData });
       console.log(response.data);
-      setErrorMessage(''); // Reset error message on successful signup
-      navigate('/dashboard'); // Redirect to dashboard after successful signup
-    } catch (error) {
-      // Handle error and display message
-      setErrorMessage(error.response ? error.response.data.errors.join(', ') : 'An error occurred');
-    } finally {
-      setIsSubmitting(false); // Re-enable the submit button
+      setErrorMessage(''); 
+      navigate('/dashboard');
+    } 
+    catch (error) {
+      setErrorMessage(
+        error.response && error.response.data && Array.isArray(error.response.data.errors)
+          ? error.response.data.errors.join(', ')
+          : 'An error occurred'
+      );
     }
   };
 
@@ -121,7 +122,6 @@ const Signup = () => {
               className="w-full p-3 border rounded-md text-gray-700 mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-
           <div className="mb-4">
             <label htmlFor="email" className="block text-gray-800">Email address</label>
             <input

@@ -22,9 +22,12 @@ const LoginForm = () => {
       const response = await axios.post('http://localhost:3000/api/v1/login', formData);
       console.log(response.data);  
 
-      localStorage.setItem('token', response.data.token);  
+      localStorage.setItem('token', response.data.token);
+      const token = localStorage.getItem('token');
+      console.log("My token" , token);
 
-      window.location.href = '/dashboard';  
+
+      window.location.href = '/hello';  
     } catch (error) {
       console.error(error.response.data);
       alert('Login failed! Please check your credentials.');
@@ -34,6 +37,13 @@ const LoginForm = () => {
   return (
     <div className="h-screen bg-blue-500 flex justify-center items-center">
       <div className="w-full max-w-sm bg-white p-6 rounded-xl shadow-lg">
+        
+      {errorMessage && (
+          <div className="bg-red-500 text-white p-3 mb-4 text-center rounded-md">
+            {errorMessage}
+          </div>
+        )}
+        
         <h3 className="text-2xl font-bold text-center text-gray-800 mb-4">Login</h3>
         <p className="text-gray-500 text-center mb-6">Please enter your login credentials!</p>
 

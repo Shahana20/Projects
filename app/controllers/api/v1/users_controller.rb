@@ -1,4 +1,5 @@
 class Api::V1::UsersController < ApplicationController
+    before_action :authenticate_user!, only: [:current]
     before_action :set_user, only: %i[show update profile destroy]
   
     # GET /api/v1/users
@@ -16,8 +17,6 @@ class Api::V1::UsersController < ApplicationController
   
     # PATCH/PUT /api/v1/users/:id
     def update
-        Rails.logger.debug("Received Params: #{params.inspect}")  # Log the request params
-        
         if @user.update(user_params)
           render json: @user
         else
@@ -52,7 +51,7 @@ class Api::V1::UsersController < ApplicationController
   
     # GET /api/v1/users/current
     def current
-      render json: current_user.to_json(methods: :user_role_ids)
+      render json: current_user
     end
   
     # DELETE /api/v1/users/:id
@@ -86,24 +85,10 @@ class Api::V1::UsersController < ApplicationController
       @user = User.find(params[:id])
     end
   
-    def user_params
-      if params[:user].nil?
-            render json: { error: 'User data is missing' }, status: :bad_request
-            return
-          end
-      personal_details = params[:personalDetails]
-      {
-        username: personal_details['username'],
-        first_name: personal_details['first_name'],
-        last_name: personal_details['last_name'],
-        location: personal_details['location'],
-        user_role_ids: personal_details['user_role_ids'],
-        skill_ids: personal_details['skill_ids'],
-        profile_image: params[:profileImage]
-      }
-    end
-  
-    # Helper methods
+      def user_params
+        params.require(:user).permit(:first_name, :last_name, :email, :location, :profile_image)
+      end
+
     def generate_image_urls(profile_image)
       {
         original: url_for(profile_image),
