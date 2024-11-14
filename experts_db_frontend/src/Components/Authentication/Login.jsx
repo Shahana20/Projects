@@ -32,7 +32,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="h-screen bg-blue-700 flex justify-center items-center">
+    <div className="h-screen bg-blue-500 flex justify-center items-center">
       <div className="w-full max-w-sm bg-white p-6 rounded-xl shadow-lg">
         <h3 className="text-2xl font-bold text-center text-gray-800 mb-4">Login</h3>
         <p className="text-gray-500 text-center mb-6">Please enter your login credentials!</p>

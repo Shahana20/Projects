@@ -8,11 +8,15 @@ class User < ApplicationRecord
   
   has_many :users_batches
   has_many :batches, through: :users_batches
-  has_and_belongs_to_many :skills
+  # has_and_belongs_to_many :skills
+  has_and_belongs_to_many :skills, join_table: :skills_users, foreign_key: :user_id, association_foreign_key: :skill_id
   has_and_belongs_to_many :user_roles
-  has_and_belongs_to_many :specialized_skills, join_table: :specialized_user_skills, class_name: 'Skill'
+  # has_and_belongs_to_many :specialized_skills, join_table: :specialized_user_skills, class_name: 'Skill'
+  # User model
+  has_and_belongs_to_many :specialized_skills, join_table: :specialized_user_skills, foreign_key: :user_id, association_foreign_key: :skill_id, class_name: 'Skill'
+
   has_many :education_details, -> { order(end_year: :desc, created_at: :desc) }, dependent: :destroy
-  has_many :carrer_details, -> { order(end_year: :desc, created_at: :desc) }, dependent: :destroy
+  has_many :career_details, -> { order(end_year: :desc, created_at: :desc) }, dependent: :destroy
   has_many :project_details, dependent: :destroy
   has_many :reviews, foreign_key: :user_id
 
@@ -45,16 +49,16 @@ class User < ApplicationRecord
   end
 
   def self.active_mentors
-    select('users.id', 'users.username', 'users.first_name', 'users.last_name', 'users.email', 'users.location', 'users.updated_at', 'carrer_details.designation', 'carrer_details.company')
-      .joins(:carrer_details, :user_roles).where(user_roles: { role: 'Mentor' })
-      .where('carrer_details.id = (SELECT MAX(cd.id) FROM carrer_details cd WHERE cd.user_id = users.id AND cd.start_year <= ? AND cd.end_year >= ?)', Date.today.year, Date.today.year)
+    select('users.id', 'users.username', 'users.first_name', 'users.last_name', 'users.email', 'users.location', 'users.updated_at', 'career_details.designation', 'career_details.company')
+      .joins(:career_details, :user_roles).where(user_roles: { role: 'Mentor' })
+      .where('career_details.id = (SELECT MAX(cd.id) FROM career_details cd WHERE cd.user_id = users.id AND cd.start_year <= ? AND cd.end_year >= ?)', Date.today.year, Date.today.year)
       .order(:id)
   end
 
   def self.active_candidates
-    select('users.id', 'users.username', 'users.first_name', 'users.last_name', 'users.email', 'users.location', 'users.updated_at', 'carrer_details.designation')
-      .joins(:carrer_details, :user_roles).where(user_roles: { role: 'Candidate' })
-      .where('carrer_details.id = (SELECT MAX(cd.id) FROM carrer_details cd WHERE cd.user_id = users.id AND cd.start_year >= ? AND cd.end_year <= ?)', 2010, Date.today.year)
+    select('users.id', 'users.username', 'users.first_name', 'users.last_name', 'users.email', 'users.location', 'users.updated_at', 'career_details.designation')
+      .joins(:career_details, :user_roles).where(user_roles: { role: 'Candidate' })
+      .where('career_details.id = (SELECT MAX(cd.id) FROM career_details cd WHERE cd.user_id = users.id AND cd.start_year >= ? AND cd.end_year <= ?)', 2010, Date.today.year)
       .order(:id)
   end
 
@@ -73,15 +77,15 @@ class User < ApplicationRecord
   end
 
   def companies
-    carrer_details.pluck(:company, :start_year, :end_year)
+    career_details.pluck(:company, :start_year, :end_year)
   end
 
   def company
-    carrer_details.first.company if carrer_details.any?
+    career_details.first.company if career_details.any?
   end
 
   def designation
-    carrer_details.first.designation if carrer_details.any?
+    career_details.first.designation if career_details.any?
   end
 
   def university

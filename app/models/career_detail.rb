@@ -1,6 +1,6 @@
 class CareerDetail < ApplicationRecord
     belongs_to :user
-    include Timestamp
+    # include Timestamp
     validates_presence_of :company, :designation, :start_year, :end_year, :job_description
     validate :start_year_before_end_year
   

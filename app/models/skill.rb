@@ -7,8 +7,12 @@ class Skill < ApplicationRecord
     has_many :reviews
   
     has_and_belongs_to_many :project_details
-    has_and_belongs_to_many :users
-    has_and_belongs_to_many :specialized_users, join_table: :specialized_user_skills, class_name: 'User'
+    # has_and_belongs_to_many :users
+    has_and_belongs_to_many :users, join_table: :skills_users, foreign_key: :skill_id, association_foreign_key: :user_id
+    # has_and_belongs_to_many :specialized_users, join_table: :specialized_user_skills, class_name: 'User'
+    # Skill model
+    has_and_belongs_to_many :specialized_users, join_table: :specialized_user_skills, foreign_key: :skill_id, association_foreign_key: :user_id
+
   
     scope :types, -> { where(parent_id: nil) }
     scope :skills, -> { where.not(parent_id: nil) }

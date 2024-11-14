@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_11_13_101456) do
+ActiveRecord::Schema[8.0].define(version: 2024_11_13_175550) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -150,17 +150,17 @@ ActiveRecord::Schema[8.0].define(version: 2024_11_13_101456) do
   end
 
   create_table "skills_users", id: false, force: :cascade do |t|
-    t.bigint "users_id", null: false
-    t.bigint "skills_id", null: false
-    t.index ["skills_id"], name: "index_skills_users_on_skills_id"
-    t.index ["users_id"], name: "index_skills_users_on_users_id"
+    t.bigint "user_id", null: false
+    t.bigint "skill_id", null: false
+    t.index ["skill_id"], name: "index_skills_users_on_skill_id"
+    t.index ["user_id"], name: "index_skills_users_on_user_id"
   end
 
   create_table "specialized_user_skills", id: false, force: :cascade do |t|
-    t.bigint "users_id", null: false
-    t.bigint "skills_id", null: false
-    t.index ["skills_id"], name: "index_specialized_user_skills_on_skills_id"
-    t.index ["users_id"], name: "index_specialized_user_skills_on_users_id"
+    t.bigint "user_id", null: false
+    t.bigint "skill_id", null: false
+    t.index ["skill_id"], name: "index_specialized_user_skills_on_skill_id"
+    t.index ["user_id"], name: "index_specialized_user_skills_on_user_id"
   end
 
   create_table "universities", force: :cascade do |t|
@@ -196,6 +196,7 @@ ActiveRecord::Schema[8.0].define(version: 2024_11_13_101456) do
     t.string "location"
     t.string "username"
     t.string "profile_picture"
+    t.datetime "discarded_at"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -223,10 +224,10 @@ ActiveRecord::Schema[8.0].define(version: 2024_11_13_101456) do
   add_foreign_key "reviews", "competency_levels", column: "competency_levels_id"
   add_foreign_key "reviews", "skills", column: "skills_id"
   add_foreign_key "reviews", "users", column: "users_id"
-  add_foreign_key "skills_users", "skills", column: "skills_id"
-  add_foreign_key "skills_users", "users", column: "users_id"
-  add_foreign_key "specialized_user_skills", "skills", column: "skills_id"
-  add_foreign_key "specialized_user_skills", "users", column: "users_id"
+  add_foreign_key "skills_users", "skills"
+  add_foreign_key "skills_users", "users"
+  add_foreign_key "specialized_user_skills", "skills"
+  add_foreign_key "specialized_user_skills", "users"
   add_foreign_key "user_roles_users", "user_roles"
   add_foreign_key "user_roles_users", "users"
   add_foreign_key "users_batches", "batches"
