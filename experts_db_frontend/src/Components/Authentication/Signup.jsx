@@ -13,10 +13,11 @@ const Signup = () => {
 
   const [passwordStrength, setPasswordStrength] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false); 
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate(); 
 
+ 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUserData({
@@ -24,11 +25,11 @@ const Signup = () => {
       [name]: value,
     });
 
-    
     if (errorMessage) {
       setErrorMessage('');
     }
   };
+
 
   const checkPasswordStrength = (password) => {
     if (password.length < 6) {
@@ -40,39 +41,50 @@ const Signup = () => {
     }
   };
 
+ 
   const handlePasswordChange = (e) => {
     handleChange(e);
     checkPasswordStrength(e.target.value);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault(); 
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     
+
     if (!userData.first_name || !userData.last_name || !userData.email || !userData.password || !userData.password_confirmation) {
       setErrorMessage('All fields are required.');
       return;
     }
 
+    
     if (userData.password !== userData.password_confirmation) {
       setErrorMessage("Passwords do not match!");
       return;
     }
 
-    setIsSubmitting(true); 
+   
+    setIsSubmitting(true);
 
     try {
-      const response = await axios.post('http://localhost:3000/api/v1/signup', { auth: userData });
+   
+      const response = await axios.post('http://localhost:4000/api/v1/users', { user: userData });
       console.log(response.data);
       setErrorMessage(''); 
-      navigate('/dashboard');
+      const { user } = response.data;
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      navigate('/hello' , {state: {userData: response.data}}); 
     } 
     catch (error) {
+  
       setErrorMessage(
         error.response && error.response.data && Array.isArray(error.response.data.errors)
           ? error.response.data.errors.join(', ')
           : 'An error occurred'
       );
+    } finally {
+    
+      setIsSubmitting(false);
     }
   };
 
@@ -146,7 +158,7 @@ const Signup = () => {
               placeholder="Enter your password"
               className="w-full p-3 border rounded-md text-gray-700 mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {/* Password Strength (optional) */}
+            {/* Optionally, display password strength */}
             {/* <p className="mt-2 text-gray-600">Password Strength: {passwordStrength}</p> */}
           </div>
 
@@ -165,15 +177,15 @@ const Signup = () => {
 
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting} // Disable button while submitting
             className="w-full p-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
           >
-            {isSubmitting ? 'Signing Up...' : 'Sign Up'}
+            {isSubmitting ? 'Submitting...' : 'Sign Up'}
           </button>
         </form>
 
         <div className="mt-4 text-center">
-          <p className="text-gray-500">Already have an account? <a href="/login" className="text-blue-600 font-semibold">Login</a></p>
+          <p className="text-gray-500">Already have an account? <a href="/" className="text-blue-600 font-semibold">Login</a></p>
         </div>
       </div>
     </div>

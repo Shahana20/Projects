@@ -49,3 +49,6 @@ end
 gem "devise"
 gem 'jwt'
 gem "discard"
+gem 'devise-jwt'
+gem 'jsonapi-serializer'
+gem 'pry'

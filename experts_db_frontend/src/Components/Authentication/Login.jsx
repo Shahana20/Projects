@@ -1,51 +1,43 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const LoginForm = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  };
+function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:3000/api/v1/login', formData);
-      console.log(response.data);  
+      const response = await axios.post("http://localhost:4000/api/v1/users/sign_in", {
+        user: { email, password },
+      });
+      console.log("Logged in:", response.data.user);
 
-      localStorage.setItem('token', response.data.token);
-      const token = localStorage.getItem('token');
-      console.log("My token" , token);
+      // Redirect to another page or update state
+      // For example:
+      const { user } = response.data;
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      console.log(user)
+      window.location.href = "/hello";
 
-
-      window.location.href = '/hello';  
     } catch (error) {
-      console.error(error.response.data);
-      alert('Login failed! Please check your credentials.');
+      setErrorMessage("Invalid email or password");
+      console.error("Login failed:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="h-screen bg-blue-500 flex justify-center items-center">
       <div className="w-full max-w-sm bg-white p-6 rounded-xl shadow-lg">
-        
-      {errorMessage && (
-          <div className="bg-red-500 text-white p-3 mb-4 text-center rounded-md">
-            {errorMessage}
-          </div>
-        )}
-        
         <h3 className="text-2xl font-bold text-center text-gray-800 mb-4">Login</h3>
-        <p className="text-gray-500 text-center mb-6">Please enter your login credentials!</p>
+        <p className="text-gray-500 text-center mb-6">Please enter your login credentials</p>
 
         <form onSubmit={handleLogin} className="w-full">
           <div className="mb-4">
@@ -54,8 +46,8 @@ const LoginForm = () => {
               type="email"
               id="email"
               name="email"
-              value={formData.email}
-              onChange={handleChange}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full p-3 border border-gray-300 rounded-lg"
               placeholder="Email"
@@ -68,19 +60,22 @@ const LoginForm = () => {
               type="password"
               id="password"
               name="password"
-              value={formData.password}
-              onChange={handleChange}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
               className="w-full p-3 border border-gray-300 rounded-lg"
               placeholder="Password"
             />
           </div>
 
+          {errorMessage && <p className="text-red-500 text-center mb-4">{errorMessage}</p>}
+
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-3 rounded-lg mb-3 hover:bg-blue-700 transition duration-300"
+            disabled={loading}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
@@ -97,6 +92,6 @@ const LoginForm = () => {
       </div>
     </div>
   );
-};
+}
 
-export default LoginForm;
+export default Login;

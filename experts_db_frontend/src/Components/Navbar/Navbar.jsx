@@ -1,27 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function Navbar() {
   const [user, setUser] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-  
-
+  const navigate = useNavigate();
+ 
   useEffect(() => {
-    fetch('/api/v1/users/current', {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      },
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.user) {
-          setUser(data.user);
-        }
-      })
-      .catch(error => console.error('Error fetching user:', error));
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null); 
+    navigate("/"); 
+  };
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   return (
@@ -31,9 +28,8 @@ function Navbar() {
         <div className="flex items-center space-x-6">
           {user ? (
             <>
-              <Link className="text-white hover:bg-gray-700 px-3 py-2 rounded-md" to="/people">People</Link>
-              <Link className="text-white hover:bg-gray-700 px-3 py-2 rounded-md" to="/batches">Batches</Link>
               <div className="relative">
+              <Link className="text-white hover:bg-gray-700 px-3 py-2 rounded-md" to="/people">People</Link>
                 <button
                   className="bg-gray-700 text-white px-3 py-2 rounded-md"
                   onClick={toggleDropdown}
@@ -43,13 +39,13 @@ function Navbar() {
                 {isOpen && (
                   <div className="absolute right-0 mt-2 bg-gray-800 text-white rounded-md shadow-lg w-40">
                     <Link
-                      to={`/profile/${user.username}`}
                       className="block px-4 py-2 text-sm hover:bg-gray-700"
+                      to="/edit"
                     >
-                      Profile
+                      Edit Profile
                     </Link>
                     <Link
-                      to="/logout"
+                      onClick={handleLogout}
                       className="block px-4 py-2 text-sm hover:bg-gray-700"
                     >
                       Logout

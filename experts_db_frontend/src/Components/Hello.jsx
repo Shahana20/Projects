@@ -1,28 +1,27 @@
-import { useEffect, useState } from 'react';
-
+import { useEffect, useState } from "react";
+// import { useLocation } from "react-router-dom";
 const Hello = () => {
-
   const [user, setUser] = useState(null);
-  const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
-  console.log(token)
-
+  // const location = useLocation();
+  // const {userData} = location.state || "not fetched";
+  console.log("user Data");
+  // console.log(userData);
   useEffect(() => {
-    fetch('/api/v1/users/current', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log('User Data:', data);
-        console.log('Decoded Token:', token);
-        setUser(data); // Set user data to the state
-      });
-  }, [token]);
+    const userData = JSON.parse(localStorage.getItem("user"));
+    console.log("inside hello.jsx",userData)
+    
+    if (userData) {
+      setUser(userData);
+    }
+  }, []);
 
   return (
     <div>
-      {user ? <h1>Hello, {user.first_name}</h1> : <p>Loading...</p>}
+      {user ? (
+        <h1>Hi, {user.first_name}</h1> 
+      ) : (
+        <p>Loading user data...</p>
+      )}
     </div>
   );
 };
