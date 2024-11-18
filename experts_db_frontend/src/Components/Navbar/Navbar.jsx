@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Navbar() {
   const [user, setUser] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
- 
+
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -16,9 +15,10 @@ function Navbar() {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    setUser(null); 
-    navigate("/"); 
+    setUser(null); // Clear the user state
+    navigate("/"); // Redirect to the login page ("/")
   };
+
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   return (
@@ -29,7 +29,7 @@ function Navbar() {
           {user ? (
             <>
               <div className="relative">
-              <Link className="text-white hover:bg-gray-700 px-3 py-2 rounded-md" to="/people">People</Link>
+                <Link className="text-white hover:bg-gray-700 px-3 py-2 rounded-md" to="/people">People</Link>
                 <button
                   className="bg-gray-700 text-white px-3 py-2 rounded-md"
                   onClick={toggleDropdown}

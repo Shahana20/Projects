@@ -5,6 +5,8 @@ Rails.application.routes.draw do
         sessions: 'api/v1/users/sessions',
         registrations: 'api/v1/users/registrations'
       }
+      resources :user_roles
+      resources :skills
     end
   end
 end
