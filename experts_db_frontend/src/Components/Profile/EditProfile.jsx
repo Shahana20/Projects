@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { TextField, Select, MenuItem, FormControl, InputLabel, FormHelperText, Checkbox, ListItemText, Button } from '@mui/material';
-import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
-import { setYear, getYear } from 'date-fns';
 
 function EditUserProfile() {
   const [step, setStep] = useState(1);
@@ -14,18 +11,18 @@ function EditUserProfile() {
   const [projects, setProjects] = useState([{ title: '', description: '', duration: '', skills: [] }]);
   const [experiences, setExperiences] = useState([{ company: '', designation: '', startYear: '', endYear: '', isCurrent: false }]);
   const [education, setEducation] = useState([{ university: '', cgpa: '', startYear: '', endYear: '' }]);
-  
+
   useEffect(() => {
     async function fetchData() {
       try {
         const skillsResponse = await fetch('http://localhost:4000/api/v1/skills');
         const rolesResponse = await fetch('http://localhost:4000/api/v1/user_roles');
         const specializationResponse = await fetch('http://localhost:4000/api/v1/skills');
-        
+
         const skillsData = await skillsResponse.json();
         const rolesData = await rolesResponse.json();
         const specializationData = await specializationResponse.json();
-        
+
         setSkillsList(skillsData.skills);
         setUserRoles(rolesData);
         setSpecializationList(specializationData.skills);
@@ -60,27 +57,44 @@ function EditUserProfile() {
         Yup.object({
           company: Yup.string().required("Company name is required"),
           designation: Yup.string().required("Designation is required"),
-          startYear: Yup.number().required("Start year is required"),
-          endYear: Yup.number().when("isCurrent", {
-            is: false,
-            then: Yup.number().required("End year is required"),
-          }),
+          startYear: Yup.string().required("Start year is required"),
+          endYear: Yup.string()
+            .when("isCurrent", {
+              is: false,
+              then: Yup.string().required("End year is required"),
+            })
+            .test(
+              "is-greater",
+              "End year must be greater than start year",
+              function (endYear) {
+                const { startYear } = this.parent;
+                return endYear >= startYear;
+              }
+            ),
         })
       ),
       education: Yup.array().of(
         Yup.object({
           university: Yup.string().required("University name is required"),
           cgpa: Yup.number().required("CGPA is required").min(0).max(10),
-          startYear: Yup.number().required("Start year is required"),
-          endYear: Yup.number().when("isCurrent", {
-            is: false,
-            then: Yup.number().required("End year is required"),
-          }),
+          startYear: Yup.string().required("Start year is required"),
+          endYear: Yup.string()
+            .when("isCurrent", {
+              is: false,
+              then: Yup.string().required("End year is required"),
+            })
+            .test(
+              "is-greater",
+              "End year must be greater than start year",
+              function (endYear) {
+                const { startYear } = this.parent;
+                return endYear >= startYear;
+              }
+            ),
         })
       ),
     }),
   };
-  
 
   const formik = useFormik({
     initialValues: {
@@ -90,15 +104,25 @@ function EditUserProfile() {
       location: '',
       skills: [],
       specialization: [],
-      startYear: '',
-      endYear: '',
       projects: projects,
       experiences: experiences,
       education: education,
     },
     validationSchema: validationSchemas[step],
-    onSubmit: (values) => {
-      alert('Form submitted successfully!');
+    onSubmit: async (values) => {
+      try {
+        const response = await fetch('http://localhost:4000/api/v1/users', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(values),
+        });
+        const result = await response.json();
+        alert('Form submitted successfully!');
+      } catch (error) {
+        console.error('Error submitting form:', error);
+      }
     },
   });
 
@@ -136,29 +160,49 @@ function EditUserProfile() {
     setEducation(education.filter((_, i) => i !== index));
   };
 
-
-  const handleProjectChange = (event, index) => {
-    const { name, value } = event.target; 
-  
+  const handleProjectChange = (index, name, value) => {
     setProjects((prevProjects) => {
       const updatedProjects = [...prevProjects];
-      updatedProjects[index] = { ...updatedProjects[index], [name]: value };
+      updatedProjects[index] = {
+        ...updatedProjects[index],
+        [name]: value,
+      };
       return updatedProjects;
     });
   };
-  const handleExperienceChange = (index, event) => {
-    const { name, value } = event.target;
-    const newExperiences = [...experiences];
-    newExperiences[index][name] = value;
-    setExperiences(newExperiences);
+
+  const handleExperienceChange = (index, name, value) => {
+    setExperiences((prevExperiences) => {
+      const updatedExperiences = [...prevExperiences];
+      updatedExperiences[index] = {
+        ...updatedExperiences[index],
+        [name]: value,
+      };
+      return updatedExperiences;
+    });
   };
 
-  const handleEducationChange = (index, event) => {
-    const { name, value } = event.target;
-    const newEducation = [...education];
-    newEducation[index][name] = value;
-    setEducation(newEducation);
+  const handleEducationChange = (index, name, value) => {
+    setEducation((prevEducation) => {
+      const updatedEducation = [...prevEducation];
+      updatedEducation[index] = {
+        ...updatedEducation[index],
+        [name]: value,
+      };
+      return updatedEducation;
+    });
   };
+
+  const renderYearOptions = (start, end) => {
+    const years = [];
+    for (let year = start; year <= end; year++) {
+      years.push(year);
+    }
+    return years.map(year => (
+      <MenuItem key={year} value={year}>{year}</MenuItem>
+    ));
+  };
+
   const renderForm = () => {
     switch (step) {
       case 1:
@@ -271,7 +315,7 @@ function EditUserProfile() {
         );
       case 2:
         return (
-          <div className="p-6 bg-white rounded shadow-md">
+          <div className="p-10 bg-white rounded shadow-md">
             <h2 className="text-xl font-bold mb-4">Project Details</h2>
             {projects.map((project, index) => (
               <div key={index} className="mb-4">
@@ -279,23 +323,22 @@ function EditUserProfile() {
                   fullWidth
                   label="Project Title"
                   name={`projects[${index}].title`}
-                  value={project.title}
+                  value={project.title || ''}
                   onChange={(e) => handleProjectChange(index, 'title', e.target.value)}
                 />
                 <TextField
                   fullWidth
                   label="Project Description"
                   name={`projects[${index}].description`}
-                  value={project.description}
+                  value={project.description || ''}
                   onChange={(e) => handleProjectChange(index, 'description', e.target.value)}
                 />
                 <TextField
                   fullWidth
-                  label="Project Duration (Months)"
+                  label="Project Duration (in months)"
                   name={`projects[${index}].duration`}
-                  value={project.duration}
-                  onChange={(event) => handleProjectChange(event, index)}
-                  type="number"
+                  value={project.duration || ''}
+                  onChange={(e) => handleProjectChange(index, 'duration', e.target.value)}
                 />
                 <FormControl fullWidth>
                   <InputLabel>Skills Used</InputLabel>
@@ -342,30 +385,40 @@ function EditUserProfile() {
                   fullWidth
                   label="Company Name"
                   name={`experiences[${index}].company`}
-                  value={experience.company}
+                  value={experience.company || ''}
                   onChange={(e) => handleExperienceChange(index, 'company', e.target.value)}
                 />
                 <TextField
                   fullWidth
                   label="Designation"
                   name={`experiences[${index}].designation`}
-                  value={experience.designation}
+                  value={experience.designation || ''}
                   onChange={(e) => handleExperienceChange(index, 'designation', e.target.value)}
                 />
-                <TextField
-                  fullWidth
-                  label="Start Year"
-                  name={`experiences[${index}].startYear`}
-                  value={experience.startYear}
-                  onChange={(e) => handleExperienceChange(index, 'startYear', e.target.value)}
-                />
-                <TextField
-                  fullWidth
-                  label="End Year"
-                  name={`experiences[${index}].endYear`}
-                  value={experience.endYear}
-                  onChange={(e) => handleExperienceChange(index, 'endYear', e.target.value)}
-                />
+                
+                <FormControl fullWidth>
+                  <InputLabel>Start Year</InputLabel>
+                  <Select
+                    name={`experiences[${index}].startYear`}
+                    value={experience.startYear}
+                    onChange={(e) => handleExperienceChange(index, 'startYear', e.target.value)}
+                  >
+                    {renderYearOptions(2000, new Date().getFullYear())}
+                  </Select>
+                </FormControl>
+                
+                <FormControl fullWidth>
+                  <InputLabel>End Year</InputLabel>
+                  <Select
+                    name={`experiences[${index}].endYear`}
+                    value={experience.isCurrent ? '' : experience.endYear}
+                    onChange={(e) => handleExperienceChange(index, 'endYear', e.target.value)}
+                    disabled={experience.isCurrent}
+                  >
+                    {renderYearOptions(2000, new Date().getFullYear())}
+                  </Select>
+                </FormControl>
+                
                 <Checkbox
                   checked={experience.isCurrent}
                   onChange={(e) => handleExperienceChange(index, 'isCurrent', e.target.checked)}
@@ -409,20 +462,29 @@ function EditUserProfile() {
                   value={edu.cgpa}
                   onChange={(e) => handleEducationChange(index, 'cgpa', e.target.value)}
                 />
-                <TextField
-                  fullWidth
-                  label="Start Year"
-                  name={`education[${index}].startYear`}
-                  value={edu.startYear}
-                  onChange={(e) => handleEducationChange(index, 'startYear', e.target.value)}
-                />
-                <TextField
-                  fullWidth
-                  label="End Year"
-                  name={`education[${index}].endYear`}
-                  value={edu.endYear}
-                  onChange={(e) => handleEducationChange(index, 'endYear', e.target.value)}
-                />
+                
+                <FormControl fullWidth>
+                  <InputLabel>Start Year</InputLabel>
+                  <Select
+                    name={`education[${index}].startYear`}
+                    value={edu.startYear}
+                    onChange={(e) => handleEducationChange(index, 'startYear', e.target.value)}
+                  >
+                    {renderYearOptions(2000, new Date().getFullYear())}
+                  </Select>
+                </FormControl>
+                
+                <FormControl fullWidth>
+                  <InputLabel>End Year</InputLabel>
+                  <Select
+                    name={`education[${index}].endYear`}
+                    value={edu.endYear}
+                    onChange={(e) => handleEducationChange(index, 'endYear', e.target.value)}
+                  >
+                    {renderYearOptions(2000, new Date().getFullYear())}
+                  </Select>
+                </FormControl>
+                
                 <Button variant="contained" color="secondary" onClick={() => handleRemoveEducation(index)}>
                   Remove Education
                 </Button>

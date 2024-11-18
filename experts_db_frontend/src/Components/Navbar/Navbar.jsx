@@ -17,6 +17,7 @@ function Navbar() {
     localStorage.removeItem("user");
     setUser(null); // Clear the user state
     navigate("/"); // Redirect to the login page ("/")
+    window.location.reload();
   };
 
   const toggleDropdown = () => setIsOpen(!isOpen);

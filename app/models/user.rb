@@ -28,7 +28,7 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :password, presence: true, length: { minimum: 6 }
 
-  PROFILE_PHOTO_CONTENT_TYPES = ['image/png', 'image/jpg', 'image/jpeg'].freeze
+  # PROFILE_PHOTO_CONTENT_TYPES = ['image/png', 'image/jpg', 'image/jpeg'].freeze
 
 
   def self.generate_jwt(user)
@@ -64,11 +64,11 @@ class User < ApplicationRecord
       .order(:id)
   end
 
-  def correct_profile_image_mime_type
-    return unless profile_image.attached? && !profile_image.content_type.in?(PROFILE_PHOTO_CONTENT_TYPES)
+  # def correct_profile_image_mime_type
+  #   return unless profile_image.attached? && !profile_image.content_type.in?(PROFILE_PHOTO_CONTENT_TYPES)
 
-    errors.add(:profile_image, 'must be a PNG, JPG, or JPEG file')
-  end
+  #   errors.add(:profile_image, 'must be a PNG, JPG, or JPEG file')
+  # end
 
   def user_role_ids
     user_roles.pluck(:id)
@@ -121,4 +121,10 @@ class User < ApplicationRecord
       { id: user.id, university_name: user.education_details.pluck(:university).first }
     end
   end
+
+  accepts_nested_attributes_for :skills, allow_destroy: true
+  accepts_nested_attributes_for :education_details, allow_destroy: true
+  accepts_nested_attributes_for :career_details, allow_destroy: true
+  accepts_nested_attributes_for :project_details, allow_destroy: true
+
 end
