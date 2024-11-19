@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::API
    include Devise::Controllers::Helpers
+   include JwtHelper
   # include AuthHelper
  
   before_action :configure_permitted_parameters, if: :devise_controller?

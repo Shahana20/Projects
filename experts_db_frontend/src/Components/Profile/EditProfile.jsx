@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
 import { TextField, Select, MenuItem, FormControl, InputLabel, FormHelperText, Checkbox, ListItemText, Button } from '@mui/material';
 
 function EditUserProfile() {
@@ -9,8 +10,12 @@ function EditUserProfile() {
   const [specializationList, setSpecializationList] = useState([]);
   const [userRoles, setUserRoles] = useState([]);
   const [projects, setProjects] = useState([{ title: '', description: '', duration: '', skills: [] }]);
-  const [experiences, setExperiences] = useState([{ company: '', designation: '', startYear: '', endYear: '', isCurrent: false }]);
-  const [education, setEducation] = useState([{ university: '', cgpa: '', startYear: '', endYear: '' }]);
+  const [experiences, setExperiences] = useState([{ company: '', designation: '', start_year: '', end_year: '', is_current: false }]);
+  const [education, setEducation] = useState([{ university: '', cgpa: '', start_year: '', end_year: '' }]);
+  const [common,setCommon] = useState([]);
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const storedToken = localStorage.getItem("token")
+
 
   useEffect(() => {
     async function fetchData() {
@@ -57,18 +62,18 @@ function EditUserProfile() {
         Yup.object({
           company: Yup.string().required("Company name is required"),
           designation: Yup.string().required("Designation is required"),
-          startYear: Yup.string().required("Start year is required"),
-          endYear: Yup.string()
-            .when("isCurrent", {
+          start_year: Yup.string().required("Start year is required"),
+          end_year: Yup.string()
+            .when("is_current", {
               is: false,
               then: Yup.string().required("End year is required"),
             })
             .test(
               "is-greater",
               "End year must be greater than start year",
-              function (endYear) {
-                const { startYear } = this.parent;
-                return endYear >= startYear;
+              function (end_year) {
+                const { start_year } = this.parent;
+                return end_year >= start_year;
               }
             ),
         })
@@ -77,18 +82,18 @@ function EditUserProfile() {
         Yup.object({
           university: Yup.string().required("University name is required"),
           cgpa: Yup.number().required("CGPA is required").min(0).max(10),
-          startYear: Yup.string().required("Start year is required"),
-          endYear: Yup.string()
-            .when("isCurrent", {
+          start_year: Yup.string().required("Start year is required"),
+          end_year: Yup.string()
+            .when("is_current", {
               is: false,
               then: Yup.string().required("End year is required"),
             })
             .test(
               "is-greater",
               "End year must be greater than start year",
-              function (endYear) {
-                const { startYear } = this.parent;
-                return endYear >= startYear;
+              function (end_year) {
+                const { start_year } = this.parent;
+                return end_year >= start_year;
               }
             ),
         })
@@ -98,8 +103,8 @@ function EditUserProfile() {
 
   const formik = useFormik({
     initialValues: {
-      first_name: '',
-      last_name: '',
+      first_name: storedUser?.first_name || "",
+      last_name: storedUser?.last_name || "",
       role: '',
       location: '',
       skills: [],
@@ -111,16 +116,54 @@ function EditUserProfile() {
     validationSchema: validationSchemas[step],
     onSubmit: async (values) => {
       try {
-        const response = await fetch('http://localhost:4000/api/v1/users', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(values),
-        });
-        const result = await response.json();
+        const formData = {
+          first_name: formik.values.first_name,
+          last_name: formik.values.last_name,
+          role: formik.values.role,
+          location: formik.values.location,
+          skills_users_attributes: formik.values.skills, 
+          specialized_user_attributes: formik.values.specialization,
+          project_details_attributes: projects,          
+          career_details_attributes: experiences,    
+          education_details_attributes: education         
+        };
+        console.log("========================",formData);
+  
+
+        const response = await axios.patch(
+          `http://localhost:4000/api/v1/users/${storedUser.id}`,
+          formData,  
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${storedToken}`
+            }
+          }
+        );
+        // const result = await response.json();
         alert('Form submitted successfully!');
-      } catch (error) {
+        console.log('Response Status:', response.status);
+        console.log('Response Type:', response.headers.get('content-type'));
+
+        // Check if the response is JSON before parsing
+      //   if (response.ok && response.headers.get('content-type').includes('application/json')) {
+      //     const result = await response.json();
+      //     alert('Form submitted successfully!');
+      //   } else {
+      //     const errorText = await response.text();
+      //     console.error('Error:', errorText);
+      //     alert(`Error submitting form: ${errorText}`);
+      //   }
+      if (response.status === 200 && response.headers['content-type'].includes('application/json')) {
+        console.log('Response Data:', response.data);
+        alert('Form submitted successfully!');
+      } else {
+        // Handle case where the response might not be JSON or something went wrong
+        console.error('Unexpected response format');
+        alert('Unexpected error submitting form');
+      }
+      } 
+      catch (error) {
         console.error('Error submitting form:', error);
       }
     },
@@ -141,11 +184,11 @@ function EditUserProfile() {
   };
 
   const handleAddExperience = () => {
-    setExperiences([...experiences, { company: '', designation: '', startYear: '', endYear: '', isCurrent: false }]);
+    setExperiences([...experiences, { company: '', designation: '',job_description: '', start_year: '', end_year: '', is_current: false }]);
   };
 
   const handleAddEducation = () => {
-    setEducation([...education, { university: '', cgpa: '', startYear: '', endYear: '' }]);
+    setEducation([...education, { university: '', cgpa: '', start_year: '', end_year: '' }]);
   };
 
   const handleRemoveProject = (index) => {
@@ -395,13 +438,19 @@ function EditUserProfile() {
                   value={experience.designation || ''}
                   onChange={(e) => handleExperienceChange(index, 'designation', e.target.value)}
                 />
-                
+                <TextField
+                  fullWidth
+                  label="Job description"
+                  name={`experiences[${index}].job_description`}
+                  value={experience.job_description || ''}
+                  onChange={(e) => handleExperienceChange(index, 'job_description', e.target.value)}
+                />
                 <FormControl fullWidth>
                   <InputLabel>Start Year</InputLabel>
                   <Select
-                    name={`experiences[${index}].startYear`}
-                    value={experience.startYear}
-                    onChange={(e) => handleExperienceChange(index, 'startYear', e.target.value)}
+                    name={`experiences[${index}].start_year`}
+                    value={experience.start_year}
+                    onChange={(e) => handleExperienceChange(index, 'start_year', e.target.value)}
                   >
                     {renderYearOptions(2000, new Date().getFullYear())}
                   </Select>
@@ -410,18 +459,18 @@ function EditUserProfile() {
                 <FormControl fullWidth>
                   <InputLabel>End Year</InputLabel>
                   <Select
-                    name={`experiences[${index}].endYear`}
-                    value={experience.isCurrent ? '' : experience.endYear}
-                    onChange={(e) => handleExperienceChange(index, 'endYear', e.target.value)}
-                    disabled={experience.isCurrent}
+                    name={`experiences[${index}].end_year`}
+                    value={experience.is_current ? '' : experience.end_year}
+                    onChange={(e) => handleExperienceChange(index, 'end_year', e.target.value)}
+                    disabled={experience.is_current}
                   >
                     {renderYearOptions(2000, new Date().getFullYear())}
                   </Select>
                 </FormControl>
                 
                 <Checkbox
-                  checked={experience.isCurrent}
-                  onChange={(e) => handleExperienceChange(index, 'isCurrent', e.target.checked)}
+                  checked={experience.is_current}
+                  onChange={(e) => handleExperienceChange(index, 'is_current', e.target.checked)}
                 />
                 Current Employee
                 <Button variant="contained" color="secondary" onClick={() => handleRemoveExperience(index)}>
@@ -466,9 +515,9 @@ function EditUserProfile() {
                 <FormControl fullWidth>
                   <InputLabel>Start Year</InputLabel>
                   <Select
-                    name={`education[${index}].startYear`}
-                    value={edu.startYear}
-                    onChange={(e) => handleEducationChange(index, 'startYear', e.target.value)}
+                    name={`education[${index}].start_year`}
+                    value={edu.start_year}
+                    onChange={(e) => handleEducationChange(index, 'start_year', e.target.value)}
                   >
                     {renderYearOptions(2000, new Date().getFullYear())}
                   </Select>
@@ -477,9 +526,9 @@ function EditUserProfile() {
                 <FormControl fullWidth>
                   <InputLabel>End Year</InputLabel>
                   <Select
-                    name={`education[${index}].endYear`}
-                    value={edu.endYear}
-                    onChange={(e) => handleEducationChange(index, 'endYear', e.target.value)}
+                    name={`education[${index}].end_year`}
+                    value={edu.end_year}
+                    onChange={(e) => handleEducationChange(index, 'end_year', e.target.value)}
                   >
                     {renderYearOptions(2000, new Date().getFullYear())}
                   </Select>

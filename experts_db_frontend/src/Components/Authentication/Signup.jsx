@@ -71,8 +71,14 @@ const Signup = () => {
       const response = await axios.post('http://localhost:4000/api/v1/users', { user: userData });
       console.log(response.data);
       setErrorMessage(''); 
-      const { user } = response.data;
-      localStorage.setItem("user", JSON.stringify(response.data.user));
+      const { user, token } = response.data;
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("token", token);  // Store the JWT token
+
+      // // Navigate to the next page
+      // navigate('/hello', { state: { userData: response.data } });
+      // const { user } = response.data;
+      // localStorage.setItem("user", JSON.stringify(response.data.user));
       navigate('/hello' , {state: {userData: response.data}}); 
     } 
     catch (error) {

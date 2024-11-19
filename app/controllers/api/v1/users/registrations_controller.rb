@@ -1,11 +1,13 @@
 class Api::V1::Users::RegistrationsController < Devise::RegistrationsController
   include RackSessionFix
+  include JwtHelper
   respond_to :json
   def create
-
     user = User.new(user_params)
     if user.save
-      render json: { message: 'User created successfully', user: user }, status: :created
+      token = generate_jwt_token(user)
+      puts token
+      render json: { message: 'User created successfully', user: user, token: token  }, status: :created
     else
       render json: { message: 'Error creating user', errors: user.errors.full_messages }, status: :unprocessable_entity
     end

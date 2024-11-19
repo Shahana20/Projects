@@ -4,15 +4,19 @@ class User < ApplicationRecord
   include Discard::Model
   include Devise::JWT::RevocationStrategies::JTIMatcher
 
+  before_create :set_default_user_role
+
   devise :database_authenticatable, :registerable,:recoverable, :rememberable, :validatable,
          :jwt_authenticatable, jwt_revocation_strategy: self
   has_one_attached :profile_image
   
   has_many :users_batches
   has_many :batches, through: :users_batches
-  # has_and_belongs_to_many :skills
+  has_many :skills_users
+  has_many :skills, through: :skills_users
   has_and_belongs_to_many :skills, join_table: :skills_users, foreign_key: :user_id, association_foreign_key: :skill_id
   has_and_belongs_to_many :user_roles
+  has_many :specialized_user_skills
   # has_and_belongs_to_many :specialized_skills, join_table: :specialized_user_skills, class_name: 'Skill'
   # User model
   has_and_belongs_to_many :specialized_skills, join_table: :specialized_user_skills, foreign_key: :user_id, association_foreign_key: :skill_id, class_name: 'Skill'
@@ -25,8 +29,8 @@ class User < ApplicationRecord
 
   # validates :first_name, presence: true
   # validates :last_name, presence: true
-  validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
-  validates :password, presence: true, length: { minimum: 6 }
+  # validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
+  # validates :password, presence: true, length: { minimum: 6 }, allow_blank: true
 
   # PROFILE_PHOTO_CONTENT_TYPES = ['image/png', 'image/jpg', 'image/jpeg'].freeze
 
@@ -36,6 +40,13 @@ class User < ApplicationRecord
     JWT.encode(payload, Rails.application.secret_key_base)
   end
 
+  def self.find_by_jti(jti)
+    find_by(jti: jti)
+  end
+
+  def set_default_user_role
+    self.user_role_id ||= 3
+  end
   private
 
   def username_does_not_contain_uppercase
@@ -123,6 +134,7 @@ class User < ApplicationRecord
   end
 
   accepts_nested_attributes_for :skills, allow_destroy: true
+  accepts_nested_attributes_for :specialized_user_skills, allow_destroy: true
   accepts_nested_attributes_for :education_details, allow_destroy: true
   accepts_nested_attributes_for :career_details, allow_destroy: true
   accepts_nested_attributes_for :project_details, allow_destroy: true

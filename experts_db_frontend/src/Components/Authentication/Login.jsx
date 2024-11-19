@@ -22,6 +22,8 @@ function Login() {
       // For example:
       const { user } = response.data;
       localStorage.setItem("user", JSON.stringify(response.data.user));
+      const token = response.data.token;
+      localStorage.setItem("jwt_token", token);
       console.log(user)
       window.location.href = "/hello";
 
