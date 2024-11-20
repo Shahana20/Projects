@@ -41,6 +41,12 @@ function Navbar() {
                   <div className="absolute right-0 mt-2 bg-gray-800 text-white rounded-md shadow-lg w-40">
                     <Link
                       className="block px-4 py-2 text-sm hover:bg-gray-700"
+                      to="/view"
+                    >
+                      View Profile
+                    </Link>
+                    <Link
+                      className="block px-4 py-2 text-sm hover:bg-gray-700"
                       to="/edit"
                     >
                       Edit Profile

@@ -6,6 +6,8 @@ Rails.application.routes.draw do
         registrations: 'api/v1/users/registrations'
       }
       patch '/users/:id', to: 'users#update', as: :update_user
+      get '/users/:id', to: 'users#show', as: :show_user
+      get '/users', to: 'users#index', as: :show_users
       resources :user_roles
       resources :skills
     end

@@ -12,9 +12,9 @@ class User < ApplicationRecord
   
   has_many :users_batches
   has_many :batches, through: :users_batches
-  has_many :skills_users
-  has_many :skills, through: :skills_users
-  has_and_belongs_to_many :skills, join_table: :skills_users, foreign_key: :user_id, association_foreign_key: :skill_id
+  # has_many :skills_users
+  # has_many :skills, through: :skills_users
+  has_and_belongs_to_many :skills
   has_and_belongs_to_many :user_roles
   has_many :specialized_user_skills
   # has_and_belongs_to_many :specialized_skills, join_table: :specialized_user_skills, class_name: 'Skill'

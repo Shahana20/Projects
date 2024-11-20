@@ -4,6 +4,8 @@ class Api::V1::Users::RegistrationsController < Devise::RegistrationsController
   respond_to :json
   def create
     user = User.new(user_params)
+    puts user_params
+    binding.pry
     if user.save
       token = generate_jwt_token(user)
       puts token

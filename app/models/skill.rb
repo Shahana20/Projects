@@ -8,7 +8,7 @@ class Skill < ApplicationRecord
   
     has_and_belongs_to_many :project_details
   
-    has_and_belongs_to_many :users, join_table: :skills_users, foreign_key: :skill_id, association_foreign_key: :user_id
+    has_and_belongs_to_many :users
     has_and_belongs_to_many :specialized_users, join_table: :specialized_user_skills, foreign_key: :skill_id, association_foreign_key: :user_id
 
   

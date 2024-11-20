@@ -9,9 +9,9 @@ function EditUserProfile() {
   const [skillsList, setSkillsList] = useState([]);
   const [specializationList, setSpecializationList] = useState([]);
   const [userRoles, setUserRoles] = useState([]);
-  const [projects, setProjects] = useState([{ title: '', description: '', duration: '', skills: [] }]);
+  const [projects, setProjects] = useState([{ title: '', description: '', url: '', duration: '', skills: [] }]);
   const [experiences, setExperiences] = useState([{ company: '', designation: '', start_year: '', end_year: '', is_current: false }]);
-  const [education, setEducation] = useState([{ university: '', cgpa: '', start_year: '', end_year: '' }]);
+  const [education, setEducation] = useState([{ university: '', degree: '', department: '', cgpa: '', start_year: '', end_year: '' }]);
   const [common,setCommon] = useState([]);
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const storedToken = localStorage.getItem("token")
@@ -180,7 +180,7 @@ function EditUserProfile() {
   };
 
   const handleAddProject = () => {
-    setProjects([...projects, { title: '', description: '', duration: '', skills: [] }]);
+    setProjects([...projects, { title: '', description: '', url:'', duration: '', skills: [] }]);
   };
 
   const handleAddExperience = () => {
@@ -188,7 +188,7 @@ function EditUserProfile() {
   };
 
   const handleAddEducation = () => {
-    setEducation([...education, { university: '', cgpa: '', start_year: '', end_year: '' }]);
+    setEducation([...education, { university: '', degree: '', department: '', cgpa: '', start_year: '', end_year: '' }]);
   };
 
   const handleRemoveProject = (index) => {
@@ -378,6 +378,13 @@ function EditUserProfile() {
                 />
                 <TextField
                   fullWidth
+                  label="Project URL"
+                  name={`projects[${index}].url`}
+                  value={project.description || ''}
+                  onChange={(e) => handleProjectChange(index, 'url', e.target.value)}
+                />
+                <TextField
+                  fullWidth
                   label="Project Duration (in months)"
                   name={`projects[${index}].duration`}
                   value={project.duration || ''}
@@ -503,6 +510,20 @@ function EditUserProfile() {
                   name={`education[${index}].university`}
                   value={edu.university}
                   onChange={(e) => handleEducationChange(index, 'university', e.target.value)}
+                />
+                <TextField
+                  fullWidth
+                  label="Degree"
+                  name={`education[${index}].degree`}
+                  value={edu.degree}
+                  onChange={(e) => handleEducationChange(index, 'degree', e.target.value)}
+                />
+                <TextField
+                  fullWidth
+                  label="Department"
+                  name={`education[${index}].department`}
+                  value={edu.department}
+                  onChange={(e) => handleEducationChange(index, 'department', e.target.value)}
                 />
                 <TextField
                   fullWidth

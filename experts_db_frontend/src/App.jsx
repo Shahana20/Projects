@@ -6,7 +6,9 @@ import SignupForm from './Components/Authentication/Signup';
 import Navbar from './Components/Navbar/Navbar';
 import Hello from './Components/Hello';
 import EditProfile from './Components/Profile/EditProfile'
+import UserProfile from './Components/Profile/UserProfile'
 import 'mdb-react-ui-kit/dist/css/mdb.min.css'; 
+import PeoplePage from './Components/People/PeoplePage';
 
 const App = () => {
 
@@ -18,6 +20,8 @@ const App = () => {
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/hello" element={<Hello/>}/>
         <Route path="/edit" element={<EditProfile/>} />
+        <Route path="/view" element={<UserProfile/>}/>
+        <Route path="/people" element={<PeoplePage/>}/>
       </Routes>
     </Router>
   );
