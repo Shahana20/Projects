@@ -42,7 +42,6 @@ class Api::V1::UsersController < ApplicationController
   
     @user = User.find_by(id: params[:id]) 
     return render json: { message: 'User not found' }, status: :not_found if @user.nil?
-    # puts "Is user nill? #{@user.nil?}"
 
     role = UserRole.find_by(role: params[:user][:role])
     puts "Role param: #{params[:user][:role]}"
@@ -80,17 +79,10 @@ class Api::V1::UsersController < ApplicationController
     params.require(:user).permit(
       :id, :first_name, :last_name, :location,
       skills_attributes: [:id, :name],
-      # skills: [:id, :name],
       specialized_skills_attributes: [:id, :name],
-      # specialization: [:id, :name],
       project_details_attributes: [:id, :title, :url, :description, :duration],
       career_details_attributes: [:id, :company, :designation, :job_description, :start_year, :end_year, :is_current],
       education_details_attributes: [:id, :university, :degree, :department, :cgpa, :start_year, :end_year]
     )
   end
-
-  # def user_params
-  #   # devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name, :email, :password, :password_confirmation])
-  #   params.require(:user).permit(:first_name, :last_name, :email, :password, :password_confirmation, skills_attributes: [:id, :name, :_destroy], education_details_attributes: [:id, :university, :start_year, :end_year, :_destroy], career_details_attributes: [:id, :company, :designation, :start_year, :end_year, :_destroy], project_details_attributes: [:id, :title, :description, :duration, :_destroy])
-  # end
 end
