@@ -100,7 +100,7 @@ function EditUserProfile() {
       ),
     }),
   };
-
+ 
   const formik = useFormik({
     initialValues: {
       first_name: storedUser?.first_name || "",
@@ -114,60 +114,160 @@ function EditUserProfile() {
       education: education,
     },
     validationSchema: validationSchemas[step],
+    // onSubmit: async (values) => {
+    //   try {
+    //     const formData = {
+    //       first_name: formik.values.first_name,
+    //       last_name: formik.values.last_name,
+    //       role: formik.values.role,
+    //       location: formik.values.location,
+    //       skills_users_attributes: formik.values.skills, 
+    //       specialized_user_attributes: formik.values.specialization,
+    //       project_details_attributes: projects,          
+    //       career_details_attributes: experiences,    
+    //       education_details_attributes: education         
+    //     };
+        
+    //     console.log("========================",formData);
+  
+
+    //     const response = await axios.patch(
+    //       `http://localhost:4000/api/v1/users/${storedUser.id}`,
+    //       formData,  
+    //       {
+    //         headers: {
+    //           'Content-Type': 'application/json',
+    //           'Authorization': `Bearer ${storedToken}`
+    //         }
+    //       }
+    //     );
+    //     console.log('Response Status:', response.status);
+    //     console.log('Response Type:', response.headers.get('content-type'));
+
+    //   if (response.status === 200 && response.headers['content-type'].includes('application/json')) {
+    //     console.log('Response Data:', response.data);
+    //     alert('Form submitted successfully!');
+    //   } else {
+    //     console.error('Unexpected response format');
+    //     alert('Unexpected error submitting form');
+    //   }
+    //   } 
+    //   catch (error) {
+    //     console.error('Error submitting form:', error);
+    //   }
+    // },
     onSubmit: async (values) => {
       try {
         const formData = {
-          first_name: formik.values.first_name,
-          last_name: formik.values.last_name,
-          role: formik.values.role,
-          location: formik.values.location,
-          skills_users_attributes: formik.values.skills, 
-          specialized_user_attributes: formik.values.specialization,
-          project_details_attributes: projects,          
-          career_details_attributes: experiences,    
-          education_details_attributes: education         
+          first_name: values.first_name,
+          last_name: values.last_name,
+          role: values.role,
+          location: values.location,
+          skills_users_attributes: values.skills, // Assuming `skills` is an array of objects
+          specialized_user_attributes: values.specialization, // Assuming `specialization` is an array of objects
+          project_details_attributes: projects, // Projects data collected from the form
+          career_details_attributes: experiences, // Experiences data collected from the form
+          education_details_attributes: education // Education data collected from the form
         };
-        console.log("========================",formData);
-  
-
+    
+        console.log("========================");
+        console.log("Form Data:", formData);
+    
+        // API call to update the user details
         const response = await axios.patch(
           `http://localhost:4000/api/v1/users/${storedUser.id}`,
-          formData,  
+          { user: formData }, // Sending the form data under the `user` key
           {
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${storedToken}`
+              Authorization: `Bearer ${storedToken}`
             }
           }
         );
-        // const result = await response.json();
-        alert('Form submitted successfully!');
+    
         console.log('Response Status:', response.status);
-        console.log('Response Type:', response.headers.get('content-type'));
-
-        // Check if the response is JSON before parsing
-      //   if (response.ok && response.headers.get('content-type').includes('application/json')) {
-      //     const result = await response.json();
-      //     alert('Form submitted successfully!');
-      //   } else {
-      //     const errorText = await response.text();
-      //     console.error('Error:', errorText);
-      //     alert(`Error submitting form: ${errorText}`);
-      //   }
-      if (response.status === 200 && response.headers['content-type'].includes('application/json')) {
-        console.log('Response Data:', response.data);
-        alert('Form submitted successfully!');
-      } else {
-        // Handle case where the response might not be JSON or something went wrong
-        console.error('Unexpected response format');
-        alert('Unexpected error submitting form');
-      }
-      } 
-      catch (error) {
+        console.log('Response Headers:', response.headers);
+    
+        // Check if the response is successful and in the expected format
+        if (response.status === 200 && response.headers['content-type'].includes('application/json')) {
+          console.log('Response Data:', response.data);
+          alert('Form submitted successfully!');
+        } else {
+          console.error('Unexpected response format');
+          alert('Unexpected error submitting form');
+        }
+      } catch (error) {
         console.error('Error submitting form:', error);
+    
+        // Display appropriate error message to the user
+        if (error.response) {
+          console.error('Error Response:', error.response.data);
+          alert(`Error: ${error.response.data.message || 'Failed to submit form'}`);
+        } else {
+          alert('Error submitting form. Please try again.');
+        }
       }
     },
   });
+
+  // const handleNext = async () => {
+  //   try {
+  //     const roleMapping = {
+  //       Mentor: "Mentor",
+  //       Admin: "Admin",
+  //       Candidate: "Candidate",
+  //     };
+
+  //     const roleName = roleMapping[formik.values.role];
+
+  //     const currentData = (() => {
+  //       if (step === 1) {
+  //         return {
+  //           first_name: formik.values.first_name,
+  //           last_name: formik.values.last_name,
+  //           role: roleName,
+  //           location: formik.values.location,
+  //           skills: formik.values.skills,
+  //           specialization: formik.values.specialization,
+  //         };
+  //       } else if (step === 2) {
+  //         return { projects };
+  //       } else if (step === 3) {
+  //         return { experiences };
+  //       } else if (step === 4) {
+  //         return { education };
+  //       }
+  //     })();
+
+  //     console.log("Step:", step);
+  //     console.log("API Endpoint:", `http://localhost:4000/api/v1/users/${storedUser.id}`);
+  //     console.log(formik.values.role);
+  //     console.log("Payload:", currentData);
+  //     // Make API call
+  //     const response = await axios.patch(
+  //       `http://localhost:4000/api/v1/users/${storedUser.id}`,
+  //       {
+  //         user: currentData
+  //       },
+  //       {
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           Authorization: `Bearer ${storedToken}`,
+  //         },
+  //       }
+  //     );
+  
+  //     if (response.status === 200) {
+  //       console.log('Data saved:', response.data);
+  //       setStep((prevStep) => prevStep + 1);
+  //     } else {
+  //       alert('Failed to save data.');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error saving data:', error);
+  //     alert('Error saving data. Please try again.');
+  //   }
+  // };
 
   const handleSkillsChange = (event) => {
     const value = event.target.value;
@@ -380,7 +480,7 @@ function EditUserProfile() {
                   fullWidth
                   label="Project URL"
                   name={`projects[${index}].url`}
-                  value={project.description || ''}
+                  value={project.url || ''}
                   onChange={(e) => handleProjectChange(index, 'url', e.target.value)}
                 />
                 <TextField

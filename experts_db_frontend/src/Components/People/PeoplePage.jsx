@@ -12,6 +12,7 @@ const PeoplePage = () => {
 
         const response = await axios.get('http://localhost:4000/api/v1/users');
         const allUsers = response.data.users;
+        console.log(response);
 
         if (tab === 'mentors') {
           const mentors = allUsers.filter(user => user.user_role_id === 2);

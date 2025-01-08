@@ -9,6 +9,8 @@ import EditProfile from './Components/Profile/EditProfile'
 import UserProfile from './Components/Profile/UserProfile'
 import 'mdb-react-ui-kit/dist/css/mdb.min.css'; 
 import PeoplePage from './Components/People/PeoplePage';
+import { MdDashboard } from 'react-icons/md';
+import UserDashboard from './Components/Dashboard/UserDashboard';
 
 const App = () => {
 
@@ -22,6 +24,7 @@ const App = () => {
         <Route path="/edit" element={<EditProfile/>} />
         <Route path="/view" element={<UserProfile/>}/>
         <Route path="/people" element={<PeoplePage/>}/>
+        <Route path="/dashboard" element={<UserDashboard/>}/>
       </Routes>
     </Router>
   );

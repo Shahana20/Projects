@@ -25,7 +25,7 @@ function Navbar() {
   return (
     <nav className="bg-gray-800 p-4">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <a className="text-white text-xl font-bold" href="/hello">Experts</a>
+        <a className="text-white text-xl font-bold" href="/dashboard">Experts</a>
         <div className="flex items-center space-x-6">
           {user ? (
             <>

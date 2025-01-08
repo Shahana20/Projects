@@ -25,7 +25,7 @@ function Login() {
       const token = response.data.token;
       localStorage.setItem("jwt_token", token);
       console.log(user)
-      window.location.href = "/hello";
+      window.location.href = "/dashboard";
 
     } catch (error) {
       setErrorMessage("Invalid email or password");

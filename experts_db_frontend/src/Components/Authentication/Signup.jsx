@@ -79,7 +79,7 @@ const Signup = () => {
       // navigate('/hello', { state: { userData: response.data } });
       // const { user } = response.data;
       // localStorage.setItem("user", JSON.stringify(response.data.user));
-      navigate('/hello' , {state: {userData: response.data}}); 
+      navigate('/dashboard' , {state: {userData: response.data}}); 
     } 
     catch (error) {
   
