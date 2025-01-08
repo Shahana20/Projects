@@ -210,64 +210,8 @@ function EditUserProfile() {
     },
   });
 
-  // const handleNext = async () => {
-  //   try {
-  //     const roleMapping = {
-  //       Mentor: "Mentor",
-  //       Admin: "Admin",
-  //       Candidate: "Candidate",
-  //     };
 
-  //     const roleName = roleMapping[formik.values.role];
 
-  //     const currentData = (() => {
-  //       if (step === 1) {
-  //         return {
-  //           first_name: formik.values.first_name,
-  //           last_name: formik.values.last_name,
-  //           role: roleName,
-  //           location: formik.values.location,
-  //           skills: formik.values.skills,
-  //           specialization: formik.values.specialization,
-  //         };
-  //       } else if (step === 2) {
-  //         return { projects };
-  //       } else if (step === 3) {
-  //         return { experiences };
-  //       } else if (step === 4) {
-  //         return { education };
-  //       }
-  //     })();
-
-  //     console.log("Step:", step);
-  //     console.log("API Endpoint:", `http://localhost:4000/api/v1/users/${storedUser.id}`);
-  //     console.log(formik.values.role);
-  //     console.log("Payload:", currentData);
-  //     // Make API call
-  //     const response = await axios.patch(
-  //       `http://localhost:4000/api/v1/users/${storedUser.id}`,
-  //       {
-  //         user: currentData
-  //       },
-  //       {
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           Authorization: `Bearer ${storedToken}`,
-  //         },
-  //       }
-  //     );
-  
-  //     if (response.status === 200) {
-  //       console.log('Data saved:', response.data);
-  //       setStep((prevStep) => prevStep + 1);
-  //     } else {
-  //       alert('Failed to save data.');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error saving data:', error);
-  //     alert('Error saving data. Please try again.');
-  //   }
-  // };
 
   const handleSkillsChange = (event) => {
     const value = event.target.value;

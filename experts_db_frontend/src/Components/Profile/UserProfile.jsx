@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FaStar, FaStarHalf } from 'react-icons/fa';
+import { FaStar, FaStarHalf, FaUserTie } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { MdLocationOn, MdOutlineMail } from 'react-icons/md';
 import { FaUserAlt } from 'react-icons/fa';
@@ -8,6 +8,8 @@ import { SlBadge } from 'react-icons/sl';
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
+  const [roles, setRoles] = useState([]);
+  const [userRoleName, setUserRoleName] = useState('');
   const [skills, setSkills] = useState([]);
   const [error, setError] = useState(null);
 
@@ -15,39 +17,25 @@ const UserProfile = () => {
   console.log('user details', userDetails);
   const userId = userDetails.id;
 
-  // useEffect(() => {
-  //   const fetchUserData = async () => {
-  //       const response = await axios.get(`http://localhost:4000/api/v1/users/${userId}`);
-  //       setUser(response.data);
-  //       console.log('user', user);
-  //       // debugger
-  //       const skillResponse = await axios.get(`http://localhost:4000/api/v1/skills`)
-  //       const allSkills = skillResponse.data.skills;
-  //       if(user){
-          
-  //         const userSkills = user.user.user_skill_id.map(
-  //           (id) => allSkills.find((skill) => skill.id === id)?.name || 'Unknown Skill'
-  //         );
-  //         console.log('skills',userSkills);
-  //         setSkills(userSkills)
-  //       }
-  //   };
-
-  //   fetchUserData();
-  // }, [userId, skills]);
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(`http://localhost:4000/api/v1/users/${userId}`);
         const userData = response.data;
-        setUser(userData);
+        const roleResponse = await axios.get(`http://localhost:4000/api/v1/user_roles`);
         const skillResponse = await axios.get(`http://localhost:4000/api/v1/skills`);
         const allSkills = skillResponse.data.skills;
+        const allRoles = roleResponse.data;
+        const foundRole = allRoles.find(role => role.id === userData.user.user_role_id);
+        console.log("foundrole", foundRole.role);
         const userSkills = userData.user.user_skill_id.map(
           (id) => allSkills.find((skill) => skill.id === id)?.name || 'Unknown Skill'
         );
-        console.log('skills', userSkills);
+        console.log('user skills', userSkills);
+        setUser(userData);
+        setRoles(allRoles);
         setSkills(userSkills);
+        setUserRoleName(foundRole.role);
       } catch (error) {
         console.error('Error fetching user or skills data:', error);
       }
@@ -75,6 +63,10 @@ const UserProfile = () => {
                 <MdLocationOn className="mr-2" />
                 {user.user.location}
               </div>
+              <div className="text-lg mb-2 flex items-center">
+                <FaUserTie className="mr-2 text-blue-500" />
+                {userRoleName}
+              </div>
               <div className="flex items-center mb-2">
                 <SlBadge className="mr-2" />
                 <span className="text-lg">
@@ -93,7 +85,6 @@ const UserProfile = () => {
               </div>
             </div>
           </div>
-
           <div className="mt-8 text-xl font-semibold">
             <b>PERFORMANCE</b>
             <div className="mt-4 bg-white shadow-lg rounded-lg p-4 overflow-auto max-h-96">
