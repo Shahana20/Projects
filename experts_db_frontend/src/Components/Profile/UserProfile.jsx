@@ -11,6 +11,7 @@ const UserProfile = () => {
   const [roles, setRoles] = useState([]);
   const [userRoleName, setUserRoleName] = useState('');
   const [skills, setSkills] = useState([]);
+  const [specializations, setSpecializations] = useState([]);
   const [error, setError] = useState(null);
 
   const userDetails = JSON.parse(localStorage.getItem('user'));
@@ -27,14 +28,20 @@ const UserProfile = () => {
         const allSkills = skillResponse.data.skills;
         const allRoles = roleResponse.data;
         const foundRole = allRoles.find(role => role.id === userData.user.user_role_id);
-        console.log("foundrole", foundRole.role);
+        
         const userSkills = userData.user.user_skill_id.map(
           (id) => allSkills.find((skill) => skill.id === id)?.name || 'Unknown Skill'
         );
-        console.log('user skills', userSkills);
+        console.log(userSkills);
+        
+        const userSpecialization = userData.user.user_specialized_skill_id.map(
+          (id) => allSkills.find((skill) => skill.id === id)?.name || 'Unknown Specializations'
+        );
+
         setUser(userData);
         setRoles(allRoles);
         setSkills(userSkills);
+        setSpecializations(userSpecialization)
         setUserRoleName(foundRole.role);
       } catch (error) {
         console.error('Error fetching user or skills data:', error);
@@ -71,6 +78,12 @@ const UserProfile = () => {
                 <SlBadge className="mr-2" />
                 <span className="text-lg">
                   {skills.length > 0 ? skills.join(', ') : 'No skills available'}
+                </span>
+              </div>
+              <div className="flex items-center mb-2">
+                <span className="font-bold mr-2">Areas of Specialization:</span>
+                <span className="text-lg">
+                {specializations.length > 0 ? specializations.join(', ') : 'No specializations available'}
                 </span>
               </div>
               <div className="absolute top-42 right-5 mt-3 mr-3 flex gap-2">

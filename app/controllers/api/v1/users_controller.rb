@@ -51,37 +51,15 @@ class Api::V1::UsersController < ApplicationController
     project_details = params[:user][:project_details_attributes]
     career_details = params[:user][:career_details_attributes]
     education_details = params[:user][:education_details_attributes]
-    # specialized_skills_names = params[:user][:specialized_user_attributes]
-
-
+    role_id = UserRole.find_by(role: role).id
+    skill_ids = Skill.where(name: skills_names).pluck(:id)
+    specialization_ids = Skill.where(name: areas_of_specialization).pluck(:id)
     puts "-----------------------------------"
-    puts "#{education_detailsi}"
+    puts "#{specialization_ids}"
     puts "-----------------------------------"
-    # puts "Is user nill? #{@user.nil?}"
-
-    # role = UserRole.find_by(role: params[:user][:role])
-    # puts "Role param: #{params[:user][:role]}"
-    # puts "---------------------------------"
-    # # puts params[:user][:skills_users_attributes]
-    # puts "---------------------------------"
-    # puts "Full Params: #{params.inspect}"
-    # if role
-    #   puts "Found Role: #{role.role}, ID: #{role.id}"
-    #   @user.user_role_id = role.id
-    # else
-    #   return render json: { message: 'Role not found' }, status: :not_found
-    # end
-
-    puts "Skills from Params: #{params[:skills_users_attributes].inspect}"
-    skills = params[:skills_users_attributes]
-    skill_ids = Skill.where(name: skills).pluck(:id)
+    @user.user_role_id = role_id
     @user.user_skill_id = skill_ids
-
-    puts "Specialized Skills from Params: #{params[:specialized_user_attributes].inspect}"
-    skills = params[:specialized_user_attributes]
-    special_skill_ids = Skill.where(name: skills).pluck(:id)
-    @user.user_specialized_skill_id = special_skill_ids
-
+    @user.user_specialized_skill_id = specialization_ids
     if @user.update(user_params)
       render json: { message: 'User updated successfully', user: @user }, status: :ok
     else
@@ -89,40 +67,18 @@ class Api::V1::UsersController < ApplicationController
     end
   end
 
-  private
 
-  def user_params
-    params.require(:user).permit(
-      :id, :first_name, :last_name, :location,
-      skills_attributes: [:id, :name],
-      # skills: [:id, :name],
-      # skills_users_attributes: [:id, :name, :_destroy],
-      specialized_skills_attributes: [:id, :name],
-      # specialization: [:id, :name],
-      project_details_attributes: [:id, :title, :url, :description, :duration],
-      career_details_attributes: [:id, :company, :designation, :job_description, :start_year, :end_year, :is_current],
-      education_details_attributes: [:id, :university, :degree, :department, :cgpa, :start_year, :end_year]
-    )
-  end
+private
 
-  # def user_params
-  #   params.require(:user).permit(
-  #     :first_name,
-  #     :last_name,
-  #     :role,
-  #     :location,
-  #     {
-  #     skills_users_attributes: [:id, :name, :_destroy],
-  #     specialized_user_attributes: [:id, :name, :_destroy]
-  #     },
-  #     career_details_attributes: [:id, :company, :designation, :start_year, :end_year, :is_current, :_destroy],
-  #     project_details_attributes: [:id, :title, :description, :url, :duration, skills: []],
-  #     education_details_attributes: [:id, :university, :degree, :department, :cgpa, :start_year, :end_year, :_destroy]
-  #   )
-  # end
-  
-  # def user_params
-  #   # devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name, :email, :password, :password_confirmation])
-  #   params.require(:user).permit(:first_name, :last_name, :email, :password, :password_confirmation, skills_attributes: [:id, :name, :_destroy], education_details_attributes: [:id, :university, :start_year, :end_year, :_destroy], career_details_attributes: [:id, :company, :designation, :start_year, :end_year, :_destroy], project_details_attributes: [:id, :title, :description, :duration, :_destroy])
-  # end
+def user_params
+  params.require(:user).permit(
+    :first_name, :last_name, :email, :location, :user_role_id, :username, :profile_picture,
+    # skills_users_attributes: [:id, :name, :_destroy],
+    # specialized_user_attributes: [:id, :name, :_destroy],
+    project_details_attributes: [:id, :title, :description, :url, :duration, :_destroy],
+    career_details_attributes: [:id, :company, :designation, :start_year, :end_year, :is_current, :_destroy],
+    education_details_attributes: [:id, :university, :degree, :department, :cgpa, :start_year, :end_year, :_destroy]
+  )
+end
+
 end
