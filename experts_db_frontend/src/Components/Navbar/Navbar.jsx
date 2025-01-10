@@ -17,8 +17,8 @@ function Navbar() {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    setUser(null); // Clear the user state
-    navigate("/"); // Redirect to the login page ("/")
+    setUser(null); 
+    navigate("/");
     window.location.reload();
   };
 

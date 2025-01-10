@@ -47,6 +47,11 @@ function Search() {
     setResults(filteredResults);
   };
 
+  const handleResultClick = (userId) => {
+
+    console.log(`Selected User ID: ${userId}`);
+  };
+
   return (
     <div className="relative w-full md:w-1/2">
   

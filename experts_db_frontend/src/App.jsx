@@ -25,7 +25,7 @@ const App = () => {
         <Route path="/view" element={<UserProfile/>}/>
         <Route path="/people" element={<PeoplePage/>}/>
         <Route path="/dashboard" element={<UserDashboard/>}/>
-      </Routes>
+      </Routes> 
     </Router>
   );
 };
