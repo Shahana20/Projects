@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Search from './Search';
-
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Search from "./Search";
+import ResultProfile from "../Profile/ResultProfile"; // Import ResultProfile
 
 function Navbar() {
   const [user, setUser] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState(null); // Store selected user profile
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,64 +18,70 @@ function Navbar() {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    setUser(null); 
+    setUser(null);
     navigate("/");
     window.location.reload();
   };
 
   const toggleDropdown = () => setIsOpen(!isOpen);
 
+  const handleResultClick = (userId) => {
+    setSelectedId(userId); // Set selected user profile
+  };
+
   return (
-    <nav className="bg-gray-800 p-4">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <a className="text-white text-xl font-bold" href="/dashboard">Experts</a>
-        <div className="flex-grow flex justify-center">
-          <Search />
+    <div>
+      <nav className="bg-gray-800 p-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <a className="text-white text-xl font-bold" href="/dashboard">Experts</a>
+          <div className="flex-grow flex justify-center">
+            <Search onResultClick={handleResultClick} /> {/* Pass handleResultClick to Search */}
+          </div>
+          <div className="flex items-center space-x-6">
+            {user ? (
+              <>
+                <div className="relative">
+                  <Link className="text-white hover:bg-gray-700 px-3 py-2 rounded-md" to="/people">People</Link>
+                  <button
+                    className="bg-gray-700 text-white px-3 py-2 rounded-md"
+                    onClick={toggleDropdown}
+                  >
+                    {user.first_name}
+                  </button>
+                  {isOpen && (
+                    <div className="absolute right-0 mt-2 bg-gray-800 text-white rounded-md shadow-lg w-40">
+                      <Link
+                        className="block px-4 py-2 text-sm hover:bg-gray-700"
+                        to="/view"
+                      >
+                        View Profile
+                      </Link>
+                      <Link
+                        className="block px-4 py-2 text-sm hover:bg-gray-700"
+                        to="/edit"
+                      >
+                        Edit Profile
+                      </Link>
+                      <Link
+                        onClick={handleLogout}
+                        className="block px-4 py-2 text-sm hover:bg-gray-700"
+                      >
+                        Logout
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                <Link className="text-white hover:bg-gray-700 px-3 py-2 rounded-md" to="/signup">Sign Up</Link>
+                <Link className="text-white hover:bg-gray-700 px-3 py-2 rounded-md" to="/">Login</Link>
+              </>
+            )}
+          </div>
         </div>
-        <div className="flex items-center space-x-6">
-          {user ? (
-            <>
-              <div className="relative">
-                <Link className="text-white hover:bg-gray-700 px-3 py-2 rounded-md" to="/people">People</Link>
-                <button
-                  className="bg-gray-700 text-white px-3 py-2 rounded-md"
-                  onClick={toggleDropdown}
-                >
-                  {user.first_name}
-                </button>
-                {isOpen && (
-                  <div className="absolute right-0 mt-2 bg-gray-800 text-white rounded-md shadow-lg w-40">
-                    <Link
-                      className="block px-4 py-2 text-sm hover:bg-gray-700"
-                      to="/view"
-                    >
-                      View Profile
-                    </Link>
-                    <Link
-                      className="block px-4 py-2 text-sm hover:bg-gray-700"
-                      to="/edit"
-                    >
-                      Edit Profile
-                    </Link>
-                    <Link
-                      onClick={handleLogout}
-                      className="block px-4 py-2 text-sm hover:bg-gray-700"
-                    >
-                      Logout
-                    </Link>
-                  </div>
-                )}
-              </div>
-            </>
-          ) : (
-            <>
-              <Link className="text-white hover:bg-gray-700 px-3 py-2 rounded-md" to="/signup">Sign Up</Link>
-              <Link className="text-white hover:bg-gray-700 px-3 py-2 rounded-md" to="/">Login</Link>
-            </>
-          )}
-        </div>
-      </div>
-    </nav>
+      </nav>
+    </div>
   );
 }
 

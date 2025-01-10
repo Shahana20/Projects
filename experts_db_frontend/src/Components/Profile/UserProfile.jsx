@@ -52,7 +52,7 @@ const UserProfile = () => {
   
 
   return (
-    <div className="my-8 px-4">
+    <div className="mt-12 pt-4">
       {error && <div className="text-red-500">{error}</div>}
       {user ? (
         <>
