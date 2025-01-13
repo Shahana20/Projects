@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import Search from "./Search";
 import ResultProfile from "../Profile/ResultProfile"; // Import ResultProfile
 
@@ -8,6 +8,7 @@ function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(null); // Store selected user profile
   const navigate = useNavigate();
+  const location = useLocation(); // Use location to check the current route
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -29,19 +30,48 @@ function Navbar() {
     setSelectedId(userId); // Set selected user profile
   };
 
+  // Check if the current route is for login or signup
+  const isAuthPage = ["/", "/signup"].includes(location.pathname);
+
   return (
     <div>
       <nav className="bg-gray-800 p-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <a className="text-white text-xl font-bold" href="/dashboard">Experts</a>
-          <div className="flex-grow flex justify-center">
-            <Search onResultClick={handleResultClick} /> {/* Pass handleResultClick to Search */}
-          </div>
+          <a className="text-white text-xl font-bold" href="/dashboard">
+            Experts
+          </a>
+          {!isAuthPage && (
+            <div className="flex-grow flex justify-center">
+              <Search onResultClick={handleResultClick} /> {/* Pass handleResultClick to Search */}
+            </div>
+          )}
           <div className="flex items-center space-x-6">
-            {user ? (
+            {isAuthPage ? (
               <>
+                {/* Navbar for login/signup pages */}
+                <Link
+                  className="text-white hover:bg-gray-700 px-3 py-2 rounded-md"
+                  to="/signup"
+                >
+                  Sign Up
+                </Link>
+                <Link
+                  className="text-white hover:bg-gray-700 px-3 py-2 rounded-md"
+                  to="/"
+                >
+                  Login
+                </Link>
+              </>
+            ) : user ? (
+              <>
+                {/* Navbar for authenticated users */}
                 <div className="relative">
-                  <Link className="text-white hover:bg-gray-700 px-3 py-2 rounded-md" to="/people">People</Link>
+                  <Link
+                    className="text-white hover:bg-gray-700 px-3 py-2 rounded-md"
+                    to="/people"
+                  >
+                    People
+                  </Link>
                   <button
                     className="bg-gray-700 text-white px-3 py-2 rounded-md"
                     onClick={toggleDropdown}
@@ -74,8 +104,19 @@ function Navbar() {
               </>
             ) : (
               <>
-                <Link className="text-white hover:bg-gray-700 px-3 py-2 rounded-md" to="/signup">Sign Up</Link>
-                <Link className="text-white hover:bg-gray-700 px-3 py-2 rounded-md" to="/">Login</Link>
+                {/* Navbar for unauthenticated users */}
+                <Link
+                  className="text-white hover:bg-gray-700 px-3 py-2 rounded-md"
+                  to="/signup"
+                >
+                  Sign Up
+                </Link>
+                <Link
+                  className="text-white hover:bg-gray-700 px-3 py-2 rounded-md"
+                  to="/"
+                >
+                  Login
+                </Link>
               </>
             )}
           </div>

@@ -120,16 +120,6 @@ function ResultProfile() {
                     : "No specializations available"}
                 </span>
               </div>
-              <div className="absolute top-42 right-5 mt-3 mr-3 flex gap-2">
-                <Link to={`/edit`}>
-                  <button className="bg-blue-500 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-600 transition">
-                    Edit
-                  </button>
-                </Link>
-                <button className="bg-red-500 text-white px-4 py-2 rounded-md text-sm hover:bg-red-600 transition">
-                  Delete
-                </button>
-              </div>
             </div>
           </div>
 
