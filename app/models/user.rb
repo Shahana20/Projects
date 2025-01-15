@@ -12,8 +12,6 @@ class User < ApplicationRecord
   
   has_many :users_batches
   has_many :batches, through: :users_batches
-  # has_many :skills_users
-  # has_many :skills, through: :skills_users
   has_and_belongs_to_many :skills
   has_and_belongs_to_many :user_roles
   has_many :specialized_user_skills
@@ -24,8 +22,9 @@ class User < ApplicationRecord
   has_many :education_details, -> { order(end_year: :desc, created_at: :desc) }, dependent: :destroy
   has_many :career_details, -> { order(end_year: :desc, created_at: :desc) }, dependent: :destroy
   has_many :project_details, dependent: :destroy
-  has_many :reviews, foreign_key: :user_id
-
+  # has_many :reviews, foreign_key: :user_id
+  has_many :reviews_given, class_name: 'Review', foreign_key: 'reviewer_id'
+  has_many :reviews_received, class_name: 'Review', foreign_key: 'users_id'
 
   # validates :first_name, presence: true
   # validates :last_name, presence: true

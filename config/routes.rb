@@ -15,6 +15,7 @@ Rails.application.routes.draw do
       # get '/users', to: 'users#index', as: :show_users
       resources :user_roles
       resources :skills
+      resources :reviews, only: [:create, :index, :show, :update, :destroy]
     end
   end
 end

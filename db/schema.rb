@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_11_19_194014) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_15_143235) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -134,8 +134,9 @@ ActiveRecord::Schema[8.0].define(version: 2024_11_19_194014) do
     t.text "comments"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.datetime "discarded_at", null: false
+    t.datetime "discarded_at"
     t.bigint "competency_levels_id"
+    t.bigint "reviewer_id"
     t.index ["competency_levels_id"], name: "index_reviews_on_competency_levels_id"
     t.index ["skills_id"], name: "index_reviews_on_skills_id"
     t.index ["users_id"], name: "index_reviews_on_users_id"
