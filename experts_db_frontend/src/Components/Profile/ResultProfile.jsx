@@ -6,6 +6,8 @@ import { FaUserAlt, FaUserTie, FaStar, FaStarHalf } from "react-icons/fa";
 import { MdOutlineMail, MdLocationOn } from "react-icons/md";
 import { SlBadge } from "react-icons/sl";
 
+import ReviewForm from "../Review.jsx/ReviewForm";
+
 function ResultProfile() {
   const [user, setUser] = useState(null);
   const location = useLocation();
@@ -18,7 +20,9 @@ function ResultProfile() {
   const [careerDetails, setCareerDetails] = useState({});
   const [projectDetails, setProjectDetails] = useState({});
   const [educationDetails, setEducationDetails] = useState({});
+  const [showReviewForm, setShowReviewForm] = useState(false);
 
+  const userRoleId = JSON.parse(localStorage.getItem('user'))?.user_role_id;
   useEffect(() => {
     const fetchUserDetails = async () => {
       setLoading(true);
@@ -32,7 +36,7 @@ function ResultProfile() {
         console.log("hi");
 
         const roles = rolesResponse.data;
-        const userRole = roles.find(role=> role.id === response.data.user.user_role_id);
+        const userRole = roles.find(role=> role.id === response.data.user.user_role_id) || 'Unknown role';
 
         const userSkills = response.data.user.user_skill_id.map(
             (id) => (skillsResponse.data.skills).find((skill) => skill.id === id)?.name || 'Unknown Skill'
@@ -81,6 +85,10 @@ function ResultProfile() {
       </div>
     );
   }
+  const handleReviewSubmission = (reviewData) => {
+    console.log('Review Submitted:', reviewData);
+    setShowReviewForm(false); 
+  };
 
   return (
     <div className="mt-12 pt-4">
@@ -122,6 +130,20 @@ function ResultProfile() {
               </div>
             </div>
           </div>
+          {userRoleId === 2 && (
+            <>
+            <div className="mt-4 flex justify-end">
+              <button className="btn btn-primary"
+              onClick={() => setShowReviewForm(true)}
+              >
+                Add a Review
+              </button>
+            </div>
+            {showReviewForm && (
+              <ReviewForm userId={userId} onReviewSubmitted={handleReviewSubmission} />
+            )}
+            </>
+          )}
 
           <div className="mt-8 text-xl font-semibold">
             <b>PERFORMANCE</b>

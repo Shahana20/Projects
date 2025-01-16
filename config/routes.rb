@@ -16,6 +16,7 @@ Rails.application.routes.draw do
       resources :user_roles
       resources :skills
       resources :reviews, only: [:create, :index, :show, :update, :destroy]
+      resources :competency_levels
     end
   end
 end
