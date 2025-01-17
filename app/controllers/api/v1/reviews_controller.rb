@@ -31,17 +31,18 @@ class Api::V1::ReviewsController < ApplicationController
   
 
       def index
-        reviews = Review.where(users_id: params[:user_id])
+        reviews = Review.all
         render json: reviews, status: :ok
       end
 
       
       def show
-        review = Review.find_by(id: params[:id])
-        if review
-          render json: review, status: :ok
+        puts "Received params: #{params.inspect}"
+        reviews = Review.where(users_id: params[:id])
+        if reviews.any?
+          render json: reviews, status: :ok
         else
-          render json: { error: 'Review not found' }, status: :not_found
+          render json: { error: 'Reviews not found for the specified user' }, status: :not_found
         end
       end
 

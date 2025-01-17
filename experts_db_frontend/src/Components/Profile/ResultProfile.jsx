@@ -7,6 +7,7 @@ import { MdOutlineMail, MdLocationOn } from "react-icons/md";
 import { SlBadge } from "react-icons/sl";
 
 import ReviewForm from "../Review.jsx/ReviewForm";
+import DisplayReviews from "../Review.jsx/DisplayReview";
 
 function ResultProfile() {
   const [user, setUser] = useState(null);
@@ -21,6 +22,8 @@ function ResultProfile() {
   const [projectDetails, setProjectDetails] = useState({});
   const [educationDetails, setEducationDetails] = useState({});
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviews, setReviews] = useState([]);
+
 
   const userRoleId = JSON.parse(localStorage.getItem('user'))?.user_role_id;
   useEffect(() => {
@@ -33,7 +36,7 @@ function ResultProfile() {
         );
         const rolesResponse = await axios.get(`http://localhost:4000/api/v1/user_roles`);
         const skillsResponse = await axios.get(`http://localhost:4000/api/v1/skills`);
-        console.log("hi");
+        
 
         const roles = rolesResponse.data;
         const userRole = roles.find(role=> role.id === response.data.user.user_role_id) || 'Unknown role';
@@ -46,6 +49,9 @@ function ResultProfile() {
             (id) => (skillsResponse.data.skills).find((specialization) => specialization.id === id)?.name || 'Unknown specialization'
         );
 
+      
+
+        
         const careers = response.data.career_details;
         const projects = response.data.project_details;
         const education = response.data.education_details;
@@ -70,6 +76,8 @@ function ResultProfile() {
     fetchUserDetails();
   }, [userId]);
 
+
+
   if (loading) {
     return (
       <div className="my-8 px-4">
@@ -89,6 +97,7 @@ function ResultProfile() {
     console.log('Review Submitted:', reviewData);
     setShowReviewForm(false); 
   };
+  
 
   return (
     <div className="mt-12 pt-4">
@@ -147,41 +156,9 @@ function ResultProfile() {
 
           <div className="mt-8 text-xl font-semibold">
             <b>PERFORMANCE</b>
-            <div className="mt-4 bg-white shadow-lg rounded-lg p-4 overflow-auto max-h-96">
-              {(skills || []).length > 0 ? (
-                skills.map((skill) => {
-                  const fullStars = Math.floor(skill.rating);
-                  const hasHalfStar = skill.rating % 1 !== 0;
-
-                  return (
-                    <div
-                      key={skill.id}
-                      className="flex justify-between items-center mb-3"
-                    >
-                      <div className="me-auto text-lg font-medium">
-                        {skill.name}
-                      </div>
-                      {/* <div>
-                        {[...Array(fullStars)].map((_, index) => (
-                          <FaStar
-                            key={index}
-                            className="text-yellow-500 text-xl"
-                          />
-                        ))}
-                        {hasHalfStar && (
-                          <FaStarHalf className="text-yellow-500 text-xl" />
-                        )}
-                      </div> */}
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="text-center text-lg text-gray-500">
-                  No reviews added
-                </div>
-              )}
-            </div>
+            <DisplayReviews userId={userId} />
           </div>
+
 
           <div className="mt-8 text-xl font-semibold">
             <b>EXPERIENCE</b>
