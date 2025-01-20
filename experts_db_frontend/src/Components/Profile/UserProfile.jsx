@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { MdLocationOn, MdOutlineMail } from 'react-icons/md';
 import { FaUserAlt } from 'react-icons/fa';
 import { SlBadge } from 'react-icons/sl';
+import DisplayReviews from '../Review.jsx/DisplayReview';
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
@@ -100,28 +101,7 @@ const UserProfile = () => {
           </div>
           <div className="mt-8 text-xl font-semibold">
             <b>PERFORMANCE</b>
-            <div className="mt-4 bg-white shadow-lg rounded-lg p-4 overflow-auto max-h-96">
-              {(user.skills || []).length > 0 ? (
-                user.skills.map((skill) => {
-                  const fullStars = Math.floor(skill.rating);
-                  const hasHalfStar = skill.rating % 1 !== 0;
-
-                  return (
-                    <div key={skill.id} className="flex justify-between items-center mb-3">
-                      <div className="me-auto text-lg font-medium">{skill.name}</div>
-                      <div>
-                        {[...Array(fullStars)].map((_, index) => (
-                          <FaStar key={index} className="text-yellow-500 text-xl" />
-                        ))}
-                        {hasHalfStar && <FaStarHalf className="text-yellow-500 text-xl" />}
-                      </div>
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="text-center text-lg text-gray-500">No reviews added</div>
-              )}
-            </div>
+            <DisplayReviews userId={userId} />
           </div>
 
           <div className="mt-8 text-xl font-semibold">

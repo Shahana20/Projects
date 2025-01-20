@@ -49,8 +49,7 @@ function ResultProfile() {
             (id) => (skillsResponse.data.skills).find((specialization) => specialization.id === id)?.name || 'Unknown specialization'
         );
 
-      
-
+      console.log("Viewer role", userRoleId)
         
         const careers = response.data.career_details;
         const projects = response.data.project_details;

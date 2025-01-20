@@ -82,21 +82,17 @@ const DisplayReviews = ({ userId }) => {
   // Display reviews if available
   return (
     <div className="max-w-4xl mx-auto py-6 px-4 space-y-4">
-      <h2 className="text-2xl font-semibold text-center text-blue-600">User Reviews</h2>
       {reviews.map((review, index) => (
         <div key={index} className="bg-white p-4 rounded-lg shadow-md border border-gray-200">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-blue-700">{review.reviewer_name || "Unknown"}</h3>
+            <h3 className="text-lg font-semibold text-blue-700">{review.reviewer_name|| "Unknown"}</h3>
             <div className="text-yellow-500">
               {"⭐".repeat(Math.round(review.stars)) || "No Rating"}
             </div>
           </div>
           <div className="space-y-2 text-gray-700">
             <p>
-              <strong>Specialization:</strong> {review.reviewer_specialization || "Unknown"}
-            </p>
-            <p>
-              <strong>Skill:</strong> {review.skill_id || "Unknown"}
+              <strong>Skill:</strong> {review.reviewer_specialization || "Unknown"}
             </p>
             <p>
               <strong>Comments:</strong> {review.comments || "No comments"}
