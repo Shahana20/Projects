@@ -13,6 +13,7 @@ import { MdDashboard } from 'react-icons/md';
 import UserDashboard from './Components/Dashboard/UserDashboard';
 import ResultProfile from './Components/Profile/ResultProfile';
 import ReviewForm from './Components/Review.jsx/ReviewForm';
+import SearchResults from './Components/People/SearchResults';
 
 const App = () => {
 
@@ -29,6 +30,7 @@ const App = () => {
         <Route path="/dashboard" element={<UserDashboard/>}/>
         <Route path ="/results" element={<ResultProfile/>}/>
         <Route path="/review" element={<ReviewForm />} />
+        <Route path="/search-results"element={<SearchResults />}/>
       </Routes> 
     </Router>
   );
