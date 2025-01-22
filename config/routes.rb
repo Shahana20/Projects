@@ -17,6 +17,11 @@ Rails.application.routes.draw do
       resources :skills
       resources :reviews, only: [:create, :index, :show, :update, :destroy]
       resources :competency_levels
+      get '/filter/locations', to: 'filters#locations'
+      get '/filter/skills', to: 'filters#skills'
+      get '/filter/roles', to: 'filters#roles'
+      get '/filter/companies', to: 'filters#companies'
+      get '/filter/designations', to: 'filters#designations'
     end
   end
 end

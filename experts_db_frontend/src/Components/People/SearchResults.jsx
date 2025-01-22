@@ -1,87 +1,63 @@
-// import React from "react";
-// import { Link, useLocation } from "react-router-dom";
-
-// function SearchResults() {
-    
-//     const location = useLocation();
-//     const { results, query } = location.state || {};
-//     const [sortedResults, setSortedResults] = useState(results);
-//     const [showFilter, setShowFilter] = useState(false);
-
-
-//     const handleSortChange = (e) => {
-//       const sortOption = e.target.value;
-  
-//       if (sortOption === "alphabetical") {
-//         const sorted = [...results].sort((a, b) => 
-//           `${a.first_name} ${a.last_name}`.localeCompare(`${b.first_name} ${b.last_name}`)
-//         );
-//         setSortedResults(sorted);
-//       } else {
-//         setSortedResults(results); 
-//       }
-//       setShowFilter(false);
-//     };
-
-//     console.log("Inside search results component",results);
-
-//   return (
-//     <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-//       {results.length > 0 ? (
-//         results.map((result) => (
-//           <div
-//             key={result.id}
-//             className="bg-white shadow-md rounded-lg p-4 hover:shadow-lg transition-shadow"
-//           >
-//             <div className="text-center">
-//               <h3 className="text-xl font-semibold">{result.first_name} {result.last_name}</h3>
-//               <Link
-//                 to={`/results`} state={{ userId: result.id }}
-//                 className="mt-4 inline-block text-blue-600 hover:text-blue-800"
-//               >
-//                 View Profile
-//               </Link>
-//             </div>
-//           </div>
-//         ))
-//       ) : (
-//         <div className="col-span-full text-center text-gray-500">
-//           No results found.
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-// export default SearchResults;
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import Filter from "./Filter";
+import SortResults from "./SortResults";
+import axios from "axios";
 
 function SearchResults() {
   const location = useLocation();
   const { results = [], query } = location.state || {};
 
+  const [filteredResults, setFilteredResults] = useState(results);
   const [sortedResults, setSortedResults] = useState(results);
   const [showFilter, setShowFilter] = useState(false);
+  const [showSort, setShowSort] = useState(false);
+  const [filterOptions, setFilterOptions] = useState({
+    locations: [],
+    skills: [],
+    specializations: [],
+    roles: [],
+    companies: [],
+    designations: [],
+  });
 
-  const handleSortChange = (option) => {
-    if (option === "alphabetical") {
-      const sorted = [...results].sort((a, b) =>
-        `${a.first_name} ${a.last_name}`.localeCompare(`${b.first_name} ${b.last_name}`)
-      );
-      setSortedResults(sorted);
-    } else {
-      setSortedResults(results); // Reset to original results if no sorting
-    }
-    setShowFilter(false); // Close the filter menu
+
+  useEffect(() => {
+    const fetchFilterData = async () => {
+      try {
+        const locationsData = await axios.get(`http://localhost:4000/api/v1/filter/locations`);
+        const skillsData = await axios.get(`http://localhost:4000/api/v1/filter/skills`);
+        const rolesData = await axios.get(`http://localhost:4000/api/v1/filter/roles`);
+        const companiesData = await axios.get(`http://localhost:4000/api/v1/filter/companies`);
+        const designationsData = await axios.get(`http://localhost:4000/api/v1/filter/designations`);
+
+        setFilterOptions({
+          locations: locationsData.data,
+          skills: skillsData.data,
+          specializations: skillsData.data, 
+          roles: rolesData.data,
+          companies: companiesData.data,
+          designations: designationsData.data,
+        });
+      } catch (error) {
+        console.error("Error fetching filter data", error);
+      }
+    };
+
+    fetchFilterData();
+  }, []);
+
+  const handleFilterChange = (filtered) => {
+    setFilteredResults(filtered);
   };
 
-  console.log("Inside search results component", sortedResults);
+  const handleSortChange = (sorted) => {
+    setSortedResults(sorted);
+  };
 
   return (
     <div className="mt-6">
-      {/* Filter Button */}
-      <div className="mb-4 flex justify-end relative">
+      <div className="mb-4 flex justify-end gap-4 relative">
         <button
           className="border border-gray-300 bg-white rounded-md px-4 py-2 shadow hover:shadow-lg focus:outline-none"
           onClick={() => setShowFilter(!showFilter)}
@@ -89,23 +65,38 @@ function SearchResults() {
           Filter
         </button>
 
-        {/* Dropdown Menu */}
+        <button
+          className="border border-gray-300 bg-white rounded-md px-4 py-2 shadow hover:shadow-lg focus:outline-none"
+          onClick={() => setShowSort(!showSort)}
+        >
+          Sort By
+        </button>
+
         {showFilter && (
-          <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg z-10">
-            <h3 className="px-4 py-2 font-semibold text-gray-700">Sort By</h3>
-            <button
-              className="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100"
-              onClick={() => handleSortChange("alphabetical")}
-            >
-              Alphabetical Order
-            </button>
+          <div className="absolute right-0 top-12 z-10">
+            <Filter
+              filterOptions={filterOptions}
+              results={results}
+              onApplyFilters={handleFilterChange}
+              onClose={() => setShowFilter(false)}
+            />
+          </div>
+        )}
+        {console.log("Inside search results", filteredResults)}
+        {showSort && (
+          <div className="absolute right-16 top-12 w-48 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+            <SortResults
+              results={filteredResults}
+              onSort={handleSortChange}
+            />
           </div>
         )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {sortedResults.length > 0 ? (
-          sortedResults.map((result) => (
+        
+        {filteredResults.length > 0 ? (
+          filteredResults.map((result) => (
             <div
               key={result.id}
               className="bg-white shadow-md rounded-lg p-4 hover:shadow-lg transition-shadow"
