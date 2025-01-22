@@ -221,6 +221,11 @@ function ResultProfile() {
                       URL: <a href={project.url}>{project.url}</a>
                     </p>
                   )}
+                  <p className="text-xl font-bold">
+                    Project Duration:{" "}
+                    <span className="font-normal">{project.duration + " "}</span>
+                    months
+                  </p>
                 </div>
               ))}
             </div>

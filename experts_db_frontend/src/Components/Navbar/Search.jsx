@@ -37,6 +37,7 @@ function Search() {
   const performSearch = (searchTerm) => {
     const lowercasedSearchTerm = searchTerm.toLowerCase();
     const skill = skills.find(skill => skill.name.toLowerCase() === lowercasedSearchTerm);
+    console.log("Found skills", skill);
     let filteredResults = [];
 
     if (skill) {

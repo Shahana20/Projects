@@ -1,13 +1,19 @@
 class EducationDetail < ApplicationRecord
-    belongs_to :user
-    # include Timestamp
-    # validates_presence_of :university, :degree, :department, :start_year, :end_year, :cgpa
-    # validates :cgpa, numericality: { greater_than: 0, message: 'must be greater than 0' }
-    # validate :start_year_before_end_year
-  
-    def start_year_before_end_year
-      return unless start_year.present? && end_year.present? && start_year > end_year
-  
-      errors.add(:start_year, 'must be before the end year')
-    end
+  belongs_to :user
+
+  validates :university, :degree, :department, :start_year, :end_year, presence: true
+  validates :cgpa, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 10 }
+  validates :start_year, numericality: { only_integer: true, less_than_or_equal_to: ->(edu) { edu.end_year } }
+
+  # Prevent overlapping education periods
+  # validate :no_overlapping_periods
+
+  # private
+
+  # def no_overlapping_periods
+  #   overlapping = user.education_details.where.not(id: id)
+  #                                        .where("start_year <= ? AND end_year >= ?", end_year, start_year)
+  #                                        .exists?
+  #   errors.add(:base, "Education period overlaps with another record.") if overlapping
+  # end
 end

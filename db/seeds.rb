@@ -1,54 +1,47 @@
+puts "Seeding reviews for users 30 to 49..."
+
+user_ids = (30..49).to_a
+reviewer_ids = User.where(user_role_id: 2).pluck(:id)
+
+user_ids.each do |user_id|
+  rand(1..5).times do
+    
+    reviewer_id = reviewer_ids.sample
+    while reviewer_id == user_id
+      reviewer_id = reviewer_ids.sample
+    end
+
+ 
+    user_skill_ids = User.find(user_id).user_skill_id
 
 
-puts "Seeding users..."
+    skill_id = user_skill_ids.sample
+    skill_name = Skill.find(skill_id).name
 
-technical = Skill.create(name: "Technical")
-non_technical = Skill.create(name: "Non-Technical")
-angular= Skill.create(name: "Angular", parent: technical)
-css = Skill.create(name: "Css", parent: technical)
-html = Skill.create(name: "Html", parent: technical)
-js = Skill.create(name: "Javascript", parent: technical)
-rails = Skill.create(name: "Rails", parent: technical)
-react = Skill.create(name: "React", parent: technical)
-ruby = Skill.create(name: "Ruby", parent: technical)
-vue = Skill.create(name: "Vue", parent: technical)
-communication = Skill.create(name: "Communication", parent: non_technical)
-discipline = Skill.create(name: "Discipline", parent: non_technical)
-punctuality = Skill.create(name: "Punctuality", parent: non_technical)
-java = Skill.create(name: "Java", parent: technical)
-python = Skill.create(name: "Python", parent: technical)
-sql = Skill.create(name: "SQL", parent: technical)
-dotnet = Skill.create(name: "Dotnet", parent: technical)
-nextjs = Skill.create(name: "NextJS", parent: technical)
+    
+    competency_level_id = CompetencyLevel.pluck(:id).sample
 
+  
+    comment = case skill_name.downcase
+              when "ruby" then "Excellent proficiency in Ruby, creating efficient and maintainable code."
+              when "javascript" then "Strong experience in JavaScript, particularly with frameworks like React and Node."
+              when "python" then "Solid Python skills, capable of developing complex data science and machine learning applications."
+              when "java" then "Proficient in Java, with expertise in building enterprise-level applications."
+              when "react" then "Great expertise in React, capable of developing modern, responsive web applications."
+              else "Skilled in #{skill_name}, able to adapt quickly to new technologies and methodologies."
+              end
 
-20.times do
-  first_name = Faker::Name.first_name
-  last_name = Faker::Name.last_name
-  email = Faker::Internet.email(name: "#{first_name} #{last_name}")
-  location = Faker::Address.city
-  username = Faker::Internet.username(specifier: "#{first_name} #{last_name}")
-  password = '123456'
-  jti = SecureRandom.uuid
-
-  User.create!(
-    first_name: first_name,
-    last_name: last_name,
-    email: email,
-    password: password,
-    password_confirmation: password,
-    user_role_id: [1, 2, 3].sample, 
-    location: location,
-    username: username,
-    profile_picture: Faker::Avatar.image,
-    discarded_at: nil,
-    jti: jti,
-    user_skill_id: Array.new(rand(1..5)) { rand(3..18) },
-    user_specialized_skill_id: [rand(3..18), rand(3..18)] 
-  )
+    Review.create!(
+      users_id: user_id,
+      reviewer_id: reviewer_id,
+      skills_id: skill_id,
+      competency_levels_id: competency_level_id,
+      marks: rand(61..100),
+      comments: comment,
+      created_at: Faker::Time.backward(days: 30),
+      updated_at: Faker::Time.backward(days: 10)
+    )
+  end
 end
 
-
-
-
-puts "Seeding completed!"
+puts "Seeding reviews completed!"

@@ -2,11 +2,13 @@ class Api::V1::Users::SessionsController < Devise::SessionsController
   include RackSessionFix
    def create
     user = User.find_by(email: params[:user][:email])
-     if user 
+     if user&.valid_password?(params[:user][:password])
       render json: {message: "user found successfully", user: user}, status: :created
-     else
-      render json: {message: "user not found", user: user}, status: :failed
-     end
+    else
+      render json: {
+        message: "Invalid email or password."
+      }, status: :unauthorized
+    end
    end
   respond_to :json
   

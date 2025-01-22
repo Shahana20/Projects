@@ -142,7 +142,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_15_143235) do
     t.index ["users_id"], name: "index_reviews_on_users_id"
   end
 
-  create_table "skills", force: :cascade do |t|
+  create_table "skills", id: :bigint, default: nil, force: :cascade do |t|
     t.string "name"
     t.integer "parent_id"
     t.datetime "created_at", null: false

@@ -17,9 +17,6 @@ function Login() {
         user: { email, password },
       });
       console.log("Logged in:", response.data.user);
-
-      // Redirect to another page or update state
-      // For example:
       const { user } = response.data;
       localStorage.setItem("user", JSON.stringify(response.data.user));
       const token = response.data.token;
