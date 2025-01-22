@@ -30,6 +30,8 @@ function SearchResults() {
         const rolesData = await axios.get(`http://localhost:4000/api/v1/filter/roles`);
         const companiesData = await axios.get(`http://localhost:4000/api/v1/filter/companies`);
         const designationsData = await axios.get(`http://localhost:4000/api/v1/filter/designations`);
+        const careerData = await axios.get(`http://localhost:4000/api/v1/career_details`)
+        
 
         setFilterOptions({
           locations: locationsData.data,
@@ -38,6 +40,7 @@ function SearchResults() {
           roles: rolesData.data,
           companies: companiesData.data,
           designations: designationsData.data,
+          careerDetails: careerData.data
         });
       } catch (error) {
         console.error("Error fetching filter data", error);

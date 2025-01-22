@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 function Filter({ onApplyFilters, onClose, filterOptions, results }) {
-  const { locations, skills, roles, companies, designations } = filterOptions;
+  const { locations, skills, roles, companies, designations, careerDetails } = filterOptions;
 
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedSkills, setSelectedSkills] = useState([]);
@@ -10,20 +10,29 @@ function Filter({ onApplyFilters, onClose, filterOptions, results }) {
   const [selectedPastCompany, setSelectedPastCompany] = useState("");
   const [selectedDesignation, setSelectedDesignation] = useState("");
 
-
+  
   const handleApplyFilters = () => {
     const filteredResults = results.filter((user) => {
-        console.log("Selected role "+ selectedRole + "user role "+ user.user_role_id);
         const skillMatch = selectedSkills.length > 0 ? 
         selectedSkills.every((selectedSkill) => (user.user_skill_id.includes(selectedSkill) || user.user_specialized_skill_id.includes(selectedSkill)))
         : true;
         const currentCareerDetail = careerDetails.find(
-            (career) => career.user_id === user.id && career.is_current === true
-          );
+          (career) => career.user_id === user.id && career.company === selectedCurrentCompany && career.is_current === true
+        );
+        const pastCareerDetail = careerDetails.find(
+          (career) => career.user_id === user.id && career.company === selectedPastCompany
+        );
+        const designationDetail = careerDetails.find(
+          (career) => career.user_id === user.id && career.designation === selectedDesignation 
+        );
+
       return (
         (selectedLocation ? user.location === selectedLocation : true)  &&
         skillMatch &&
-        (selectedRole ? user.user_role_id == selectedRole : true)
+        (selectedRole ? user.user_role_id == selectedRole : true) &&
+        (selectedCurrentCompany ? currentCareerDetail : true) &&
+        (selectedPastCompany ? pastCareerDetail : true) &&
+        (selectedDesignation ? designationDetail : true)  
       );
     });
 
@@ -88,7 +97,6 @@ function Filter({ onApplyFilters, onClose, filterOptions, results }) {
                         </li>
                         ))}
                     </ul>
-                   { console.log("Selected skill", selectedSkills)}
                 </div>
                 <button
                 className="text-blue-500 mt-2"
