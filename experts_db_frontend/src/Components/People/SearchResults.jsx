@@ -52,6 +52,7 @@ function SearchResults() {
 
   const handleFilterChange = (filtered) => {
     setFilteredResults(filtered);
+    setSortedResults(filtered);
   };
 
   const handleSortChange = (sorted) => {
@@ -91,6 +92,7 @@ function SearchResults() {
             <SortResults
               results={filteredResults}
               onSort={handleSortChange}
+              filteredResults={filteredResults}
             />
           </div>
         )}
@@ -98,8 +100,8 @@ function SearchResults() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         
-        {filteredResults.length > 0 ? (
-          filteredResults.map((result) => (
+        {sortedResults.length > 0 ? (
+          sortedResults.map((result) => (
             <div
               key={result.id}
               className="bg-white shadow-md rounded-lg p-4 hover:shadow-lg transition-shadow"

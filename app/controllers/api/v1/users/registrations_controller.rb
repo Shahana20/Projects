@@ -5,7 +5,6 @@ class Api::V1::Users::RegistrationsController < Devise::RegistrationsController
   def create
     user = User.new(user_params)
     puts user_params
-    # binding.pry
     if user.save
       token = generate_jwt_token(user)
       puts token
@@ -18,7 +17,6 @@ class Api::V1::Users::RegistrationsController < Devise::RegistrationsController
   private
 
   def user_params
-    # devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name, :email, :password, :password_confirmation])
     params.require(:user).permit(:first_name, :last_name, :email, :password, :password_confirmation, skills_attributes: [:id, :name, :_destroy], education_details_attributes: [:id, :university, :start_year, :end_year, :_destroy], career_details_attributes: [:id, :company, :designation, :start_year, :end_year, :_destroy], project_details_attributes: [:id, :title, :description, :duration, :_destroy])
   end
 

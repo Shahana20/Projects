@@ -23,6 +23,7 @@ Rails.application.routes.draw do
       get '/filter/roles', to: 'filters#roles'
       get '/filter/companies', to: 'filters#companies'
       get '/filter/designations', to: 'filters#designations'
+      get "/sort/users", to: "sort#sort_users"
     end
   end
 end

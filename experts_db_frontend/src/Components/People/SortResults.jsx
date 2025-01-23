@@ -1,25 +1,28 @@
 import React from "react";
+import axios from "axios";
 
-function SortResults({ results, onSort }) {
-  const [sortOption, setSortOption] = React.useState("default");
+function SortResults({ onSort, filteredResults }) {
+  const [loading, setLoading] = React.useState(false);
 
-  const handleSortChange = (option) => {
-    setSortOption(option);
-  };
+  const handleSortChange = async (option) => {
+    setLoading(true);
 
-  const sortedResults = React.useMemo(() => {
-    let sortedData = [...results];
-    if (sortOption === "alphabetical") {
-      sortedData = sortedData.sort((a, b) =>
-        `${a.first_name} ${a.last_name}`.localeCompare(`${b.first_name} ${b.last_name}`)
-      );
+    try {
+      const response = await axios.get(`/api/v1/sort/users`, {
+        params: {
+          sort_by: option, 
+          filtered_ids: filteredResults.map(result => result.id) 
+        },
+      });
+
+      onSort(response.data);
+      console.log("Sorted response", response.data);
+    } catch (error) {
+      console.error("Error fetching sorted users:", error);
+    } finally {
+      setLoading(false);
     }
-    return sortedData;
-  }, [results, sortOption]);
-
-  React.useEffect(() => {
-    onSort(sortedResults);
-  }, [sortedResults, onSort]);
+  };
 
   return (
     <div className="p-4">
@@ -27,9 +30,51 @@ function SortResults({ results, onSort }) {
       <div className="flex flex-col mt-4">
         <button
           className="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100"
-          onClick={() => handleSortChange("alphabetical")}
+          onClick={() => handleSortChange("name_asc")}
         >
           Alphabetical Order (A-Z)
+        </button>
+        <button
+          className="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100"
+          onClick={() => handleSortChange("name_desc")}
+        >
+          Alphabetical Order (Z-A)
+        </button>
+        <button
+          className="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100"
+          onClick={() => handleSortChange("experience_asc")}
+        >
+          Experience (Low to High)
+        </button>
+        <button
+          className="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100"
+          onClick={() => handleSortChange("experience_desc")}
+        >
+          Experience (High to Low)
+        </button>
+        <button
+          className="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100"
+          onClick={() => handleSortChange("rating_asc")}
+        >
+          Rating (Low to High)
+        </button>
+        <button
+          className="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100"
+          onClick={() => handleSortChange("rating_desc")}
+        >
+          Rating (High to Low)
+        </button>
+        <button
+          className="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100"
+          onClick={() => handleSortChange("project_count_asc")}
+        >
+          Project Count (Low to High)
+        </button>
+        <button
+          className="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100"
+          onClick={() => handleSortChange("project_count_desc")}
+        >
+          Project Count (High to Low)
         </button>
       </div>
     </div>
