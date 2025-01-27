@@ -5,6 +5,7 @@ class User < ApplicationRecord
   include Devise::JWT::RevocationStrategies::JTIMatcher
 
   before_create :set_default_user_role
+  before_create :generate_jti
 
   devise :database_authenticatable, :registerable,:recoverable, :rememberable, :validatable,
          :jwt_authenticatable, jwt_revocation_strategy: self
@@ -15,14 +16,11 @@ class User < ApplicationRecord
   has_and_belongs_to_many :skills
   has_and_belongs_to_many :user_roles
   has_many :specialized_user_skills
-  # has_and_belongs_to_many :specialized_skills, join_table: :specialized_user_skills, class_name: 'Skill'
-  # User model
   has_and_belongs_to_many :specialized_skills, join_table: :specialized_user_skills, foreign_key: :user_id, association_foreign_key: :skill_id, class_name: 'Skill'
 
   has_many :education_details, -> { order(end_year: :desc, created_at: :desc) }, dependent: :destroy
   has_many :career_details, -> { order(end_year: :desc, created_at: :desc) }, dependent: :destroy
   has_many :project_details, dependent: :destroy
-  # has_many :reviews, foreign_key: :user_id
   has_many :reviews_given, class_name: 'Review', foreign_key: 'reviewer_id'
   has_many :reviews_received, class_name: 'Review', foreign_key: 'users_id'
 
@@ -74,12 +72,6 @@ class User < ApplicationRecord
       .order(:id)
   end
 
-  # def correct_profile_image_mime_type
-  #   return unless profile_image.attached? && !profile_image.content_type.in?(PROFILE_PHOTO_CONTENT_TYPES)
-
-  #   errors.add(:profile_image, 'must be a PNG, JPG, or JPEG file')
-  # end
-
   def user_role_ids
     user_roles.pluck(:id)
   end
@@ -130,6 +122,10 @@ class User < ApplicationRecord
     self.kept.includes(:education_details).map do |user|
       { id: user.id, university_name: user.education_details.pluck(:university).first }
     end
+  end
+
+  def generate_jti
+    self.jti ||= SecureRandom.uuid
   end
 
   accepts_nested_attributes_for :skills, allow_destroy: true

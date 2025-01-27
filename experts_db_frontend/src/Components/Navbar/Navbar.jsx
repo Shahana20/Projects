@@ -1,24 +1,45 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Search from "./Search";
-import ResultProfile from "../Profile/ResultProfile"; // Import ResultProfile
+import axios from "axios";
+import {jwtDecode} from "jwt-decode"; 
 
 function Navbar() {
   const [user, setUser] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedId, setSelectedId] = useState(null); // Store selected user profile
+  const [selectedId, setSelectedId] = useState(null);
   const navigate = useNavigate();
-  const location = useLocation(); // Use location to check the current route
+  const location = useLocation();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
+    const fetchUserProfile = async () => {
+      const token = localStorage.getItem("jwt_token");
+
+      if (token) {
+        try {
+          const decoded = jwtDecode(token);
+          const user_id = decoded.sub; 
+
+          const response = await axios.get(`http://localhost:4000/api/v1/users/${user_id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`, 
+            },
+          });
+
+          setUser(response.data.user);
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+          localStorage.removeItem("jwt_token"); 
+          navigate("/"); 
+        }
+      }
+    };
+
+    fetchUserProfile();
+  }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
+    localStorage.removeItem("jwt_token");
     setUser(null);
     navigate("/");
     window.location.reload();
@@ -27,10 +48,9 @@ function Navbar() {
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   const handleResultClick = (userId) => {
-    setSelectedId(userId); // Set selected user profile
+    setSelectedId(userId); 
   };
 
-  // Check if the current route is for login or signup
   const isAuthPage = ["/", "/signup"].includes(location.pathname);
 
   return (
@@ -42,13 +62,12 @@ function Navbar() {
           </a>
           {!isAuthPage && (
             <div className="flex-grow flex justify-center">
-              <Search onResultClick={handleResultClick} /> {/* Pass handleResultClick to Search */}
+              <Search onResultClick={handleResultClick} /> 
             </div>
           )}
           <div className="flex items-center space-x-6">
             {isAuthPage ? (
               <>
-                {/* Navbar for login/signup pages */}
                 <Link
                   className="text-white hover:bg-gray-700 px-3 py-2 rounded-md"
                   to="/signup"
@@ -64,7 +83,6 @@ function Navbar() {
               </>
             ) : user ? (
               <>
-                {/* Navbar for authenticated users */}
                 <div className="relative">
                   <Link
                     className="text-white hover:bg-gray-700 px-3 py-2 rounded-md"
@@ -104,7 +122,6 @@ function Navbar() {
               </>
             ) : (
               <>
-                {/* Navbar for unauthenticated users */}
                 <Link
                   className="text-white hover:bg-gray-700 px-3 py-2 rounded-md"
                   to="/signup"

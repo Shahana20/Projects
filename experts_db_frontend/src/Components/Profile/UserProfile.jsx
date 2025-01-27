@@ -6,6 +6,7 @@ import { MdLocationOn, MdOutlineMail } from 'react-icons/md';
 import { FaUserAlt } from 'react-icons/fa';
 import { SlBadge } from 'react-icons/sl';
 import DisplayReviews from '../Review.jsx/DisplayReview';
+import { jwtDecode } from 'jwt-decode';
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
@@ -15,9 +16,10 @@ const UserProfile = () => {
   const [specializations, setSpecializations] = useState([]);
   const [error, setError] = useState(null);
 
-  const userDetails = JSON.parse(localStorage.getItem('user'));
-  console.log('user details', userDetails);
-  const userId = userDetails.id;
+
+  const token = localStorage.getItem("jwt_token");
+  const decodedToken = jwtDecode(token)
+  const userId = decodedToken.sub
 
   useEffect(() => {
     const fetchUserData = async () => {

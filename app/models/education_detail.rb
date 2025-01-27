@@ -2,7 +2,7 @@ class EducationDetail < ApplicationRecord
   belongs_to :user
 
   validates :university, :degree, :department, :start_year, :end_year, presence: true
-  validates :cgpa, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 10 }
+  validates :cgpa, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 10 }, allow_nil: true;
   validates :start_year, numericality: { only_integer: true, less_than_or_equal_to: ->(edu) { edu.end_year } }
 
   # Prevent overlapping education periods

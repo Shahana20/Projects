@@ -37,11 +37,12 @@ class Api::V1::UsersController < ApplicationController
 
 
   def update
-    # puts "Received Params: #{params.inspect}"
-    # puts "Permitted Params: #{user_params.inspect}"
+    puts "Received Params: #{params.inspect}"
+    puts "Permitted Params: #{user_params.inspect}"
   
     @user = User.find_by(id: params[:id]) 
     return render json: { message: 'User not found' }, status: :not_found if @user.nil?
+
     first_name = params[:user][:first_name]
     last_name = params[:user][:last_name]
     role = params[:user][:role]
@@ -54,12 +55,13 @@ class Api::V1::UsersController < ApplicationController
     role_id = UserRole.find_by(role: role).id
     skill_ids = Skill.where(name: skills_names).pluck(:id)
     specialization_ids = Skill.where(name: areas_of_specialization).pluck(:id)
-    puts "-----------------------------------"
-    puts "#{specialization_ids}"
-    puts "-----------------------------------"
+
+    user_role = UserRole.find_by(role: role)
     @user.user_role_id = role_id
     @user.user_skill_id = skill_ids
     @user.user_specialized_skill_id = specialization_ids
+
+ 
     if @user.update(user_params)
       render json: { message: 'User updated successfully', user: @user }, status: :ok
     else
@@ -73,8 +75,6 @@ private
 def user_params
   params.require(:user).permit(
     :first_name, :last_name, :email, :location, :user_role_id, :username, :profile_picture,
-    # skills_users_attributes: [:id, :name, :_destroy],
-    # specialized_user_attributes: [:id, :name, :_destroy],
     project_details_attributes: [:id, :title, :description, :url, :duration, :_destroy],
     career_details_attributes: [:id, :company, :designation, :start_year, :end_year, :is_current, :_destroy],
     education_details_attributes: [:id, :university, :degree, :department, :cgpa, :start_year, :end_year, :_destroy]

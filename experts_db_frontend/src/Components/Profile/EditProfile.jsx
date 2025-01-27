@@ -3,6 +3,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 import { TextField, Select, MenuItem, FormControl, InputLabel, FormHelperText, Checkbox, ListItemText, Button } from '@mui/material';
+import { jwtDecode } from 'jwt-decode';
 
 function EditUserProfile() {
   const [step, setStep] = useState(1);
@@ -13,8 +14,9 @@ function EditUserProfile() {
   const [experiences, setExperiences] = useState([{ company: '', designation: '', start_year: '', end_year: '', is_current: false }]);
   const [education, setEducation] = useState([{ university: '', degree: '', department: '', cgpa: '', start_year: '', end_year: '' }]);
   const [common,setCommon] = useState([]);
-  const storedUser = JSON.parse(localStorage.getItem("user"));
-  const storedToken = localStorage.getItem("token")
+  const [user, setUser] = useState({});
+  const storedToken = localStorage.getItem("jwt_token");
+  const user_id = jwtDecode(storedToken).sub;
 
 
   useEffect(() => {
@@ -23,6 +25,13 @@ function EditUserProfile() {
         const skillsResponse = await fetch('http://localhost:4000/api/v1/skills');
         const rolesResponse = await fetch('http://localhost:4000/api/v1/user_roles');
         const specializationResponse = await fetch('http://localhost:4000/api/v1/skills');
+        const response = await axios.get(`http://localhost:4000/api/v1/users/${user_id}`, {
+          headers: {
+            Authorization: `Bearer ${storedToken}`, 
+          },
+        });
+        
+        const storedUser = response.data.user;
 
         const skillsData = await skillsResponse.json();
         const rolesData = await rolesResponse.json();
@@ -31,6 +40,8 @@ function EditUserProfile() {
         setSkillsList(skillsData.skills);
         setUserRoles(rolesData);
         setSpecializationList(specializationData.skills);
+        setUser(storedUser);
+        
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -101,10 +112,11 @@ function EditUserProfile() {
     }),
   };
  
+ 
   const formik = useFormik({
     initialValues: {
-      first_name: storedUser?.first_name || "",
-      last_name: storedUser?.last_name || "",
+      first_name: user?.first_name || "",
+      last_name: user?.last_name || "",
       role: '',
       location: '',
       skills: [],
@@ -114,48 +126,6 @@ function EditUserProfile() {
       education: education,
     },
     validationSchema: validationSchemas[step],
-    // onSubmit: async (values) => {
-    //   try {
-    //     const formData = {
-    //       first_name: formik.values.first_name,
-    //       last_name: formik.values.last_name,
-    //       role: formik.values.role,
-    //       location: formik.values.location,
-    //       skills_users_attributes: formik.values.skills, 
-    //       specialized_user_attributes: formik.values.specialization,
-    //       project_details_attributes: projects,          
-    //       career_details_attributes: experiences,    
-    //       education_details_attributes: education         
-    //     };
-        
-    //     console.log("========================",formData);
-  
-
-    //     const response = await axios.patch(
-    //       `http://localhost:4000/api/v1/users/${storedUser.id}`,
-    //       formData,  
-    //       {
-    //         headers: {
-    //           'Content-Type': 'application/json',
-    //           'Authorization': `Bearer ${storedToken}`
-    //         }
-    //       }
-    //     );
-    //     console.log('Response Status:', response.status);
-    //     console.log('Response Type:', response.headers.get('content-type'));
-
-    //   if (response.status === 200 && response.headers['content-type'].includes('application/json')) {
-    //     console.log('Response Data:', response.data);
-    //     alert('Form submitted successfully!');
-    //   } else {
-    //     console.error('Unexpected response format');
-    //     alert('Unexpected error submitting form');
-    //   }
-    //   } 
-    //   catch (error) {
-    //     console.error('Error submitting form:', error);
-    //   }
-    // },
     onSubmit: async (values) => {
       try {
         const formData = {
@@ -163,20 +133,19 @@ function EditUserProfile() {
           last_name: values.last_name,
           role: values.role,
           location: values.location,
-          skills_users_attributes: values.skills, // Assuming `skills` is an array of objects
-          specialized_user_attributes: values.specialization, // Assuming `specialization` is an array of objects
-          project_details_attributes: projects, // Projects data collected from the form
-          career_details_attributes: experiences, // Experiences data collected from the form
-          education_details_attributes: education // Education data collected from the form
+          skills_users_attributes: values.skills, 
+          specialized_user_attributes: values.specialization, 
+          project_details_attributes: projects, 
+          career_details_attributes: experiences, 
+          education_details_attributes: education 
         };
-    
-        console.log("========================");
+
+        console.log("values", values)
         console.log("Form Data:", formData);
-    
-        // API call to update the user details
+
         const response = await axios.patch(
-          `http://localhost:4000/api/v1/users/${storedUser.id}`,
-          { user: formData }, // Sending the form data under the `user` key
+          `http://localhost:4000/api/v1/users/${user_id}`,
+          { user: formData }, 
           {
             headers: {
               'Content-Type': 'application/json',
@@ -188,10 +157,10 @@ function EditUserProfile() {
         console.log('Response Status:', response.status);
         console.log('Response Headers:', response.headers);
     
-        // Check if the response is successful and in the expected format
+      
         if (response.status === 200 && response.headers['content-type'].includes('application/json')) {
           console.log('Response Data:', response.data);
-          alert('Form submitted successfully!');
+          window.location.href = "/view";
         } else {
           console.error('Unexpected response format');
           alert('Unexpected error submitting form');
@@ -199,7 +168,6 @@ function EditUserProfile() {
       } catch (error) {
         console.error('Error submitting form:', error);
     
-        // Display appropriate error message to the user
         if (error.response) {
           console.error('Error Response:', error.response.data);
           alert(`Error: ${error.response.data.message || 'Failed to submit form'}`);
@@ -209,7 +177,6 @@ function EditUserProfile() {
       }
     },
   });
-
 
 
 
@@ -327,7 +294,9 @@ function EditUserProfile() {
                 <Select
                   name="role"
                   value={formik.values.role}
-                  onChange={formik.handleChange}
+                  onChange={(e) => {formik.setFieldValue("role", e.target.value)
+                    console.log("Role changed to:", e.target.value);
+                  }}
                   onBlur={formik.handleBlur}
                 >
                   <MenuItem value="">

@@ -73,7 +73,7 @@ const Signup = () => {
       setErrorMessage(''); 
       const { user, token } = response.data;
       localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("token", token); 
+      localStorage.setItem("jwt_token", token);
 
       navigate('/dashboard' , {state: {userData: response.data}}); 
     } 

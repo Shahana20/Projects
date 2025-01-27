@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import {jwtDecode} from "jwt-decode";
 
 const UserDashboard = () => {
     const[mentorsCount, setMentorsCount] = useState(0);
     const[candidatesCount, setCandidatesCount] = useState(0);
+    const token = localStorage.getItem("jwt_token");
     useEffect(() => {
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            console.log("Declared token", decodedToken); 
+        }
         const fetchUsers = async() => {
             try {
-                const response = await axios.get('http://localhost:4000/api/v1/users');
+                const response = await axios.get('http://localhost:4000/api/v1/users',
+                    {headers: {
+                        Authorization: `Bearer ${token}`
+                    }}
+                );
                 // console.log(response);
                 const allUsers = response.data.users;
                 let mentors = 0;

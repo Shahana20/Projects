@@ -26,7 +26,6 @@ class Api::V1::Users::RegistrationsController < Devise::RegistrationsController
   puts "Validation errors: #{resource.errors.full_messages}"
     if request.method == 'POST' && resource.persisted?
       puts resource
-      # binding.pry
       render json: { message: 'Signed up sucessfully.', data: resource }, status: :ok
     elsif request.method == 'DELETE'
       render json: { message: 'Account deleted successfully.'}, status: :ok

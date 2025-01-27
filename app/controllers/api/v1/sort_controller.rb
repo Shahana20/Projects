@@ -2,32 +2,30 @@ class Api::V1::SortController < ApplicationController
     def sort_users
         filtered_ids = params[:filtered_ids] 
         filtered_users = User.where(id: filtered_ids)
-        puts"------------------------------"
-        puts Date.current.year
         case params[:sort_by]
         when "name_asc"
             users = filtered_users.order("users.first_name ASC")
         when "name_desc"
-            users = users.order("users.first_name DESC")
+            users = filtered_users.order("users.first_name DESC")
         when "experience_asc", "experience_desc"
             users = filtered_users.left_joins(:career_details)
                         .select(
-                        "users.*, 
-                          SUM(CASE WHEN career_details.is_current THEN #{Date.current.year} 
+                            "users.*, 
+                            SUM(COALESCE(
+                            CASE 
+                                WHEN career_details.is_current THEN #{Date.current.year} 
                                 ELSE career_details.end_year 
-                              END - career_details.start_year) AS experience"
+                            END - career_details.start_year, 
+                            0
+                            )) AS experience"
                         )
                         .group("users.id")
                         .order("experience #{sort_direction(params[:sort_by])}")
-                        puts "------------------------------------------"
-                        users.each do |user|
-                            puts "User ID: #{user.id}, Total Experience Years: #{user.experience || 0}"
-                        end
         when "rating_asc", "rating_desc"
-            users = filtered_users.left_joins(:reviews)
+            users = filtered_users.left_joins(:reviews_received)
                         .select(
                         "users.*, 
-                        AVG(reviews.marks) AS rating"
+                        AVG(COALESCE(reviews.marks, 0)) AS rating"
                         )
                         .group("users.id")
                         .order("rating #{sort_direction(params[:sort_by])}")
@@ -39,6 +37,10 @@ class Api::V1::SortController < ApplicationController
                         )
                         .group("users.id")
                         .order("project_count #{sort_direction(params[:sort_by])}")
+                        puts "------------------------------------------"
+                        users.each do |user|
+                            puts "User ID: #{user.id}, Total count: #{user.project_count || 0}"
+                        end
         else
             users = filtered_users.order("users.first_name ASC")
         end
