@@ -15,6 +15,7 @@ const UserProfile = () => {
   const [skills, setSkills] = useState([]);
   const [specializations, setSpecializations] = useState([]);
   const [error, setError] = useState(null);
+  const [isCardVisible, setIsCardVisible] = useState(false);
 
 
   const token = localStorage.getItem("jwt_token");
@@ -53,6 +54,25 @@ const UserProfile = () => {
     fetchUserData();
   }, [userId]);
   
+  const handleDelete = async () => {
+      try {
+        const response = await axios.delete(`http://localhost:4000/api/v1/users/${userId}`);
+        if (response.status === 200) {
+          window.location.href = "/login"; 
+        }
+      } catch (error) {
+        console.error("Error deleting user profile:", error);
+        alert('An error occurred while deleting the profile');
+      }
+  };
+  
+  const handleShowCard = () => {
+    setIsCardVisible(true);
+  };
+
+  const handleCloseCard = () => {
+    setIsCardVisible(false);
+  };
 
   return (
     <div className="mt-12 pt-4">
@@ -95,9 +115,38 @@ const UserProfile = () => {
                     Edit
                   </button>
                 </Link>
-                <button className="bg-red-500 text-white px-4 py-2 rounded-md text-sm hover:bg-red-600 transition">
+                <button 
+                onClick={handleShowCard}
+                className="bg-red-500 text-white px-4 py-2 rounded-md text-sm hover:bg-red-600 transition">
                   Delete
                 </button>
+                {isCardVisible && (
+                <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+                  <div className="w-96 bg-white p-6 rounded-lg shadow-xl">
+                    <h2 className="text-2xl font-semibold text-gray-800">Confirm Deletion</h2>
+                    <p className="text-gray-600 mt-2">
+                      Are you sure you want to delete your profile? This action is irreversible.
+                    </p>
+                    <div className="mt-4 flex justify-between">
+                      <button
+                        onClick={() => {
+                          handleDelete();
+                          handleCloseCard();
+                        }}
+                        className="bg-red-500 text-white px-4 py-2 rounded-md text-sm hover:bg-red-600 transition"
+                      >
+                        Confirm
+                      </button>
+                      <button
+                        onClick={handleCloseCard}
+                        className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md text-sm hover:bg-gray-400 transition"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
               </div>
             </div>
           </div>

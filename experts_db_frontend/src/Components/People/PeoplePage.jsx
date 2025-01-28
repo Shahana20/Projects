@@ -31,8 +31,7 @@ const PeoplePage = () => {
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-semibold text-gray-800 mb-6">People Page</h1>
-
+  
       <div className="flex space-x-4 mb-6">
         <button 
           onClick={() => setTab('mentors')} 

@@ -5,7 +5,7 @@ Rails.application.routes.draw do
         sessions: 'api/v1/users/sessions',
         registrations: 'api/v1/users/registrations'
       }
-      resources :users, only: [:index, :show, :update] do
+      resources :users, only: [:index, :show, :update, :destroy] do
         member do
           patch :update_partial
         end

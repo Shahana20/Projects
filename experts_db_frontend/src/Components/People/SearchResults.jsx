@@ -21,6 +21,12 @@ function SearchResults() {
     designations: [],
   });
 
+  const [appliedFilters, setAppliedFilters] = useState([]);
+  useEffect(() => {
+    setAppliedFilters([]);
+    setFilteredResults(results);
+    setSortedResults(results);
+  }, [results]);
 
   useEffect(() => {
     const fetchFilterData = async () => {
@@ -50,9 +56,11 @@ function SearchResults() {
     fetchFilterData();
   }, []);
 
-  const handleFilterChange = (filtered) => {
+  const handleFilterChange = (filtered, applied) => {
     setFilteredResults(filtered);
     setSortedResults(filtered);
+    setAppliedFilters(applied);
+    console.log("applied filters", appliedFilters);
   };
 
   const handleSortChange = (sorted) => {
@@ -97,6 +105,28 @@ function SearchResults() {
           </div>
         )}
       </div>
+
+      {appliedFilters.length > 0 && (
+        <div className="mb-4 p-4 rounded-md">
+          <div className="flex flex-wrap gap-2 mt-2">
+            {appliedFilters.map((filter, index) => (
+              <span key={index} className="bg-blue-500 text-white px-3 py-1 rounded-md text-sm">
+                {filter.name}: {filter.value}
+                <button
+                  className="ml-2 text-white hover:text-red-500"
+                  onClick={() => {
+                    const newFilters = appliedFilters.filter((_, i) => i !== index);
+                    setAppliedFilters(newFilters);
+                    handleFilterChange(results, newFilters);
+                  }}
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         
