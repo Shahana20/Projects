@@ -8,6 +8,7 @@ function Search() {
   const [users, setUsers] = useState([]);
   const [skills, setSkills] = useState([]);
   const [roles, setRoles] = useState([]);
+  const [careerDetails, setCareerDetails] = useState([])
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,11 +17,12 @@ function Search() {
         const response = await axios.get(`http://localhost:4000/api/v1/users`);
         const skillsResponse = await axios.get(`http://localhost:4000/api/v1/skills`);
         const rolesResponse = await axios.get("http://localhost:4000/api/v1/user_roles");
-        console.log(rolesResponse)
+        const careerDetailsResponse = await axios.get("http://localhost:4000/api/v1/career_details");
         
         setUsers(response.data.users || []);
         setSkills(skillsResponse.data.skills);
         setRoles(rolesResponse.data || []);
+        setCareerDetails(careerDetailsResponse.data || [])
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -54,6 +56,9 @@ function Search() {
         const location = user.location ? user.location.toLowerCase() : "";
         const userRole = roles.find((role) => role.id === user.user_role_id);
         const roleName = userRole ? userRole.role.toLowerCase() : "";
+        const careerDetail = careerDetails.find((career) => career.user_id === user.id);
+        const company = careerDetail ? careerDetail.company.toLowerCase() : "";
+        const designation = careerDetail ? careerDetail.designation.toLowerCase() : "";
 
         const isNameMatch = firstName.includes(lowercasedSearchTerm) || lastName.includes(lowercasedSearchTerm);
         const isSkillMatch = user.user_skill_id.some((userSkillId) =>
@@ -61,8 +66,10 @@ function Search() {
         );
         const isLocationMatch = location.includes(lowercasedSearchTerm);
         const isRoleMatch = roleName.includes(lowercasedSearchTerm);
+        const isCompanyMatch = company.includes(lowercasedSearchTerm);
+        const isDesignationMatch = designation.includes(lowercasedSearchTerm);
 
-        return isNameMatch || isSkillMatch || isLocationMatch || isRoleMatch;
+        return isNameMatch || isSkillMatch || isLocationMatch || isRoleMatch || isCompanyMatch || isDesignationMatch;
       });
     }
 
