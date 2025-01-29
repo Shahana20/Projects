@@ -71,14 +71,14 @@ function SearchResults() {
     <div className="mt-6">
       <div className="mb-4 flex justify-end gap-4 relative">
         <button
-          className="border border-gray-300 bg-white rounded-md px-4 py-2 shadow hover:shadow-lg focus:outline-none"
+          className="border border-gray-300 bg-white rounded-md px-4 py-2 shadow hover:shadow-lg focus:outline-none z-50"
           onClick={() => setShowFilter(!showFilter)}
         >
           Filter
         </button>
 
         <button
-          className="border border-gray-300 bg-white rounded-md px-4 py-2 shadow hover:shadow-lg focus:outline-none"
+          className="border border-gray-300 bg-white rounded-md px-4 py-2 shadow hover:shadow-lg focus:outline-none z-50"
           onClick={() => setShowSort(!showSort)}
         >
           Sort By

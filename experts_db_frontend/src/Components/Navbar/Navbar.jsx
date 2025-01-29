@@ -55,7 +55,7 @@ function Navbar() {
 
   return (
     <div>
-      <nav className="bg-gray-800 p-4">
+      <nav className="bg-gray-800 p-4 z-50">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <a className="text-white text-xl font-bold" href="/dashboard">
             Experts
@@ -97,7 +97,7 @@ function Navbar() {
                     {user.first_name}
                   </button>
                   {isOpen && (
-                    <div className="absolute right-0 mt-2 bg-gray-800 text-white rounded-md shadow-lg w-40">
+                    <div className="absolute right-0 mt-2 bg-gray-800 text-white rounded-md shadow-lg w-40 z-50">
                       <Link
                         className="block px-4 py-2 text-sm hover:bg-gray-700"
                         to="/view"

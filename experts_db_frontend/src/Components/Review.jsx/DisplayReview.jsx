@@ -10,18 +10,12 @@ const DisplayReviews = ({ userId }) => {
       setLoading(true);
 
       try {
-        // First, make a HEAD request to check if the reviews exist for the user
         const headResponse = await axios.head(`http://localhost:4000/api/v1/reviews/${userId}`);
-        
-        // If the response status is 404, it means no reviews exist for this user
         if (headResponse.status === 404) {
-          setReviews([]); // Set empty array when no reviews are found
+          setReviews([]); 
         } else {
-          // Proceed with the GET request to fetch reviews if the resource exists
           const reviewsResponse = await axios.get(`http://localhost:4000/api/v1/reviews/${userId}`);
           const reviewsData = reviewsResponse.data;
-
-          // Enrich reviews with additional information
           const enrichedReviews = await Promise.all(
             reviewsData.map(async (review) => {
               try {
@@ -48,20 +42,20 @@ const DisplayReviews = ({ userId }) => {
             })
           );
 
-          setReviews(enrichedReviews); // Set the enriched reviews state
+          setReviews(enrichedReviews); 
         }
       } catch (error) {
         console.error("Error fetching reviews:", error);
-        setReviews([]); // Set empty array if error occurs
+        setReviews([]); 
       } finally {
-        setLoading(false); // Set loading state to false after the request is complete
+        setLoading(false); 
       }
     };
 
-    fetchAndEnrichReviews(); // Call the function to fetch reviews
+    fetchAndEnrichReviews(); 
   }, [userId]);
 
-  // Loading state
+
   if (loading) {
     return (
       <div className="flex justify-center items-center py-6">
@@ -70,7 +64,7 @@ const DisplayReviews = ({ userId }) => {
     );
   }
 
-  // No reviews found, show appropriate message
+
   if (!reviews.length) {
     return (
       <div className="flex justify-center items-center py-6">
@@ -79,7 +73,7 @@ const DisplayReviews = ({ userId }) => {
     );
   }
 
-  // Display reviews if available
+
   return (
     <div className="max-w-4xl mx-auto py-6 px-4 space-y-4">
       {reviews.map((review, index) => (

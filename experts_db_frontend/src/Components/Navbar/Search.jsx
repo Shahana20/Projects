@@ -7,6 +7,7 @@ function Search() {
   const [results, setResults] = useState([]);
   const [users, setUsers] = useState([]);
   const [skills, setSkills] = useState([]);
+  const [roles, setRoles] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -14,9 +15,12 @@ function Search() {
       try {
         const response = await axios.get(`http://localhost:4000/api/v1/users`);
         const skillsResponse = await axios.get(`http://localhost:4000/api/v1/skills`);
+        const rolesResponse = await axios.get("http://localhost:4000/api/v1/user_roles");
+        console.log(rolesResponse)
         
         setUsers(response.data.users || []);
         setSkills(skillsResponse.data.skills);
+        setRoles(rolesResponse.data || []);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -37,7 +41,6 @@ function Search() {
   const performSearch = (searchTerm) => {
     const lowercasedSearchTerm = searchTerm.toLowerCase();
     const skill = skills.find(skill => skill.name.toLowerCase() === lowercasedSearchTerm);
-    console.log("Found skills", skill);
     let filteredResults = [];
 
     if (skill) {
@@ -48,13 +51,18 @@ function Search() {
       filteredResults = users.filter((user) => {
         const firstName = user.first_name ? user.first_name.toLowerCase() : "";
         const lastName = user.last_name ? user.last_name.toLowerCase() : "";
+        const location = user.location ? user.location.toLowerCase() : "";
+        const userRole = roles.find((role) => role.id === user.user_role_id);
+        const roleName = userRole ? userRole.role.toLowerCase() : "";
 
         const isNameMatch = firstName.includes(lowercasedSearchTerm) || lastName.includes(lowercasedSearchTerm);
         const isSkillMatch = user.user_skill_id.some((userSkillId) =>
           skills.some((skill) => skill.id === userSkillId && skill.name.toLowerCase().includes(lowercasedSearchTerm))
         );
+        const isLocationMatch = location.includes(lowercasedSearchTerm);
+        const isRoleMatch = roleName.includes(lowercasedSearchTerm);
 
-        return isNameMatch || isSkillMatch;
+        return isNameMatch || isSkillMatch || isLocationMatch || isRoleMatch;
       });
     }
 

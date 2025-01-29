@@ -10,9 +10,6 @@ Rails.application.routes.draw do
           patch :update_partial
         end
       end
-      # patch '/users/:id', to: 'users#update', as: :update_user
-      # get '/users/:id', to: 'users#show', as: :show_user
-      # get '/users', to: 'users#index', as: :show_users
       resources :user_roles
       resources :skills
       resources :reviews, only: [:create, :index, :show, :update, :destroy]
@@ -24,6 +21,9 @@ Rails.application.routes.draw do
       get '/filter/companies', to: 'filters#companies'
       get '/filter/designations', to: 'filters#designations'
       get "/sort/users", to: "sort#sort_users"
+      get  'passwords/forgot', to: 'passwords#forgot', as: :forgot_password
+      post 'passwords/forgot', to: 'passwords#send_reset_email'
+      patch 'passwords/reset', to: 'passwords#update_password'
     end
   end
 end

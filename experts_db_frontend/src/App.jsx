@@ -14,6 +14,8 @@ import UserDashboard from './Components/Dashboard/UserDashboard';
 import ResultProfile from './Components/Profile/ResultProfile';
 import ReviewForm from './Components/Review.jsx/ReviewForm';
 import SearchResults from './Components/People/SearchResults';
+import ForgotPassword from './Components/Authentication/ForgotPassword';
+import ResetPassword from './Components/Authentication/ResetPassword';
 
 const App = () => {
 
@@ -31,6 +33,8 @@ const App = () => {
         <Route path ="/results" element={<ResultProfile/>}/>
         <Route path="/review" element={<ReviewForm />} />
         <Route path="/search-results"element={<SearchResults />}/>
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes> 
     </Router>
   );
