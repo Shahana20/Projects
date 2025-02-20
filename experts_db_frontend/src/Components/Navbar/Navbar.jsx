@@ -57,7 +57,13 @@ function Navbar() {
     <div>
       <nav className="bg-gray-800 p-4 z-50">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <a className="text-white text-xl font-bold" href="/dashboard">
+          <a className="text-white text-xl font-bold" 
+          href={user ? "/dashboard" : "/"}
+          onClick={(e) => {
+            if (!user) {
+              e.preventDefault(); 
+            }
+          }}>
             Experts
           </a>
           {!isAuthPage && (

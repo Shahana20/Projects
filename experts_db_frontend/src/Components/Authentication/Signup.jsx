@@ -179,7 +179,7 @@ const Signup = () => {
 
           <button
             type="submit"
-            disabled={isSubmitting} // Disable button while submitting
+            disabled={isSubmitting}
             className="w-full p-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
           >
             {isSubmitting ? 'Submitting...' : 'Sign Up'}

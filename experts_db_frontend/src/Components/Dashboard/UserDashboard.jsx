@@ -19,7 +19,6 @@ const UserDashboard = () => {
                         Authorization: `Bearer ${token}`
                     }}
                 );
-                // console.log(response);
                 const allUsers = response.data.users;
                 let mentors = 0;
                 let candidates = 0;
@@ -29,9 +28,8 @@ const UserDashboard = () => {
                     if (user.user_role_id === 3) candidates++;
                 });
 
-                // const mentorsCount = (allUsers.filter(user => user.user_role_id === 2)).length;
                 setMentorsCount(mentors);
-                // const candidatesCount = (allUsers.filter(user => user.user_role_id === 3)).length;
+                
                 setCandidatesCount(candidates);
             }
             catch(error) {

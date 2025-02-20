@@ -14,7 +14,7 @@ const ResetPassword = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-  const [countdown, setCountdown] = useState(3); // Countdown state
+  const [countdown, setCountdown] = useState(3); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -106,7 +106,7 @@ const ResetPassword = () => {
         <div className="text-center">
           <p className="text-gray-600">
             Remembered your password?{' '}
-            <a href="/login" className="text-blue-500 font-bold hover:underline">Login</a>
+            <a href="/" className="text-blue-500 font-bold hover:underline">Login</a>
           </p>
         </div>
 

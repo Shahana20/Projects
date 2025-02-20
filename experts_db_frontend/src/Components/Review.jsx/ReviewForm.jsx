@@ -21,10 +21,8 @@ function ReviewForm({ userId, onReviewSubmitted }) {
       try {
         const skillsResponse = await axios.get("http://localhost:4000/api/v1/skills");
         const competencyResponse = await axios.get("http://localhost:4000/api/v1/competency_levels");
-        // console.log(competencyResponse.data);
         setSkills(skillsResponse.data.skills); 
         setCompetency(competencyResponse.data)
-        // console.log(competency)
       } catch (err) {
         console.error("Error fetching skills:", err);
       }
